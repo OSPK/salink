@@ -215,9 +215,9 @@ def profile(user, view='p', page=1):
     return render_template('profile.html', user=user, reviews=reviews, products=products)
 
 
-@app.route('/pf/')
-@app.route('/pf/<view>/')
-@app.route('/pf/<view>/<int:page>/')
+@app.route('/listing/')
+@app.route('/listing/<view>/')
+@app.route('/listing/<view>/<int:page>/')
 def products(page=1, view='latest'):
     products = Product.query.order_by(Product.pub_date.desc()).paginate(page, POSTS_PER_PAGE, False)
 
@@ -276,7 +276,7 @@ def search(page=1):
     return render_template('products.html', search=search, results=results, products=products)
 
 
-@app.route('/pf/autocomplete', methods=['GET', 'POST'])
+@app.route('/listing/autocomplete', methods=['GET', 'POST'])
 def autocomplete():
     search = unicode(request.args.get('q'))
     products = Product.query.options(load_only("title", "id")).filter(Product.title.startswith(search)).limit(5).all()
@@ -304,7 +304,7 @@ def autocomplete():
     return response
 
 
-@app.route('/pf/add', methods=['GET', 'POST'])
+@app.route('/listing/add', methods=['GET', 'POST'])
 @limiter.limit("1/second")
 def addproduct():
     imgform = AddProduct()
@@ -693,7 +693,7 @@ def product_api(id):
     return jsonify(p, reviews=r)
 
 
-@app.route('/api/pf/', methods=['GET'])
+@app.route('/api/listing/', methods=['GET'])
 def products_api():
     products = Product.query.order_by(Product.pub_date.desc()).all()
     resp = []

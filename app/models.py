@@ -51,7 +51,7 @@ class Product(db.Model):
     pub_date = db.Column(db.DateTime, nullable=False)
     category = db.Column(db.String(70), nullable=True)
     phone = db.Column(db.String(70), nullable=True)
-    description = db.Column(db.String(500), nullable=True)
+    address = db.Column(db.String(500), nullable=True)
     owner_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     passes = db.Column(db.Integer, nullable=True)
     fails = db.Column(db.Integer, nullable=True)

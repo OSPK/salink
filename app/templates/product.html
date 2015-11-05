@@ -36,77 +36,14 @@
 					<img class="img-responsive" itemprop="image" src="{{ product.image|thumbnail('800x600', quality=100)|replace("_800x600_100.gif", ".gif") }}" alt="">
 					{% endif %}
 				</div>
-				{% if product.passes or product.fails %}
-					<div class="progress">
-					  <div class="progress-bar progress-bar-success" style="width: {{ (product.passes/(product.passes + product.fails))*100 }}%">
-					    <span class="passes">{{ product.passes }}</span>
-					  </div>
-					  <div class="progress-bar progress-bar-danger" style="width: {{ (product.fails/(product.passes + product.fails))*100 }}%">
-					    <span class="fails">{{ product.fails }}</span>
-					  </div>
-					</div>
-				{% else %}
-					<div class="progress hidden">
-					  <div class="progress-bar progress-bar-success" style="">
-					    <span class="passes"></span>
-					  </div>
-					  <div class="progress-bar progress-bar-danger" style="">
-					    <span class="fails"></span>
-					  </div>
-					</div>
-				{% endif %}
 
-				{% if current_user.is_authenticated() and not already_voted %}
-				<div class="row no-gutter">
-					<div class="col-md-6 col-sm-6 col-xs-6">
-						<div class="passform" rel="passtip" data-toggle="tooltip" data-trigger="manual" data-placement="top" title="Your vote">
-							<form id="vote_formpass" action="{{ url_for('product_post_vote', id=product.id) }}" class="form-horizontal" method="post">
-							<input type="text" name="vote" value="pass" class="hidden" hidden>
-							<input type="text" name="votechange" value="pass" class="hidden" hidden>
-							<button class="pull-right vote pass">Pass</button>
-							</form>
-						</div>
-					</div>
-					<div class="col-md-6 col-sm-6 col-xs-6">
-						<div class="failform" rel="failtip" data-toggle="tooltip" data-trigger="manual" data-placement="top" title="Your vote">
-							<form id="vote_formfail" action="{{ url_for('product_post_vote', id=product.id) }}" class="form-horizontal" method="post">
-							<input type="text" name="vote" value="fail" class="hidden" hidden>
-							<input type="text" name="votechange" value="fail" class="hidden" hidden>
-							<button class="pull-left vote fail">Fail</button>
-							</form>
-						</div>
-					</div>
-				</div>
-				<div id='vinst' class="small text-center">Vote to add your review</div>
-				{% endif %}
 
-				{% if already_voted %}
-					<div class="row no-gutter">
-						<div class="col-md-6 col-sm-6 col-xs-6">
-							<div class="passform" rel="passtip" data-toggle="tooltip" data-trigger="manual" data-placement="top" title="Your vote">
-								<form id="vote_formpass" action="{{ url_for('product_post_vote', id=product.id) }}" class="form-horizontal" method="post">
-								<input type="text" name="votechange" value="pass" class="hidden" hidden>
-								<button class="pull-right vote pass {% if my_vote=="pass" %}selected{% endif %}" {% if my_vote == "pass" %}disabled="disabled"{%endif%}>Pass</button>
-								</form>
-							</div>
-						</div>
-						<div class="col-md-6 col-sm-6 col-xs-6">
-							<div class="failform" rel="failtip" data-toggle="tooltip" data-trigger="manual" data-placement="top" title="Your vote">
-								<form id="vote_formfail" action="{{ url_for('product_post_vote', id=product.id) }}" class="form-horizontal" method="post">
-								<input type="text" name="votechange" value="fail" class="hidden" hidden>
-								<button class="pull-left vote fail {% if my_vote == "fail" %}selected{%endif%}" {% if my_vote == "fail" %}disabled="disabled"{%endif%}>Fail</button>
-								</form>
-							</div>
-						</div>
-					</div>
-				{% endif %}
 				<div class="single small product-meta clearfix">
 		            <i class="fa fa-eye"></i> {% if product.views %}{{ product.views }}{% else %}0{% endif %} views | 
-		            <i class="fa fa-hand-o-up"></i> <span id="votecount">{% if product.passes or product.fails %}{{ product.passes+product.fails }}{% else %}0{% endif %}</span> votes | 
 		            <i class="fa fa-comments"></i> <span id="reviewcount">{% if product.review_count %}{{ product.review_count }}{% else %}0{%endif%}</span> reviews | 
 		            <i class="fa fa-clock-o"></i> {{ago_format(product.pub_date)}}
 		        </div>
-				<a href="#review_form" class="writerev {%if already_voted == False %}hidden{% endif %}"><button class="btn btn-block btn-primary">Write Review</button></a>
+				<a href="#review_form" class="writerev"><button class="btn btn-block btn-primary">Write Review</button></a>
 				{% if not current_user.is_authenticated() %}<p class="h4 text-center"><a href="{{ url_for('signup') }}">Sign up</a> or <a href="{{ url_for('login') }}">Log in</a> to participate</p>{% endif %}
 			</div><!--product-->
 			<div class="pull-right clearfix"><br>
@@ -138,7 +75,7 @@
 				{% endfor %}
 			</div><!--reviews-->
 			{% if current_user.is_authenticated() %}
-				<form id="review_form" action="{{ url_for('product_post_review', id=product.id) }}" class="form-horizontal review_text reviewform {%if already_voted == False %}hidden{% endif %}" method="post">
+				<form id="review_form" action="{{ url_for('product_post_review', id=product.id) }}" class="form-horizontal review_text reviewform" method="post">
 					{{ reviewform.hidden_tag() }}
 					<div class="form-group">
 						<div class="small pull-right wordcount">Characters left: <span id="charNum">500</span></div>

@@ -556,7 +556,7 @@ def product_post_review(id):
         if myvote:
             already_voted = True
 
-    if current_user.is_authenticated() and already_voted is True:
+    if current_user.is_authenticated():
         author_id = current_user.id
         pub_date = datetime.datetime.now()
 

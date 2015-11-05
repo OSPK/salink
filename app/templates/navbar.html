@@ -1,0 +1,61 @@
+<a href="#menu-toggle" class="btn btn-lg btn-danger mob-nav" id="menu-toggle"><i class="fa fa-bars"></i></a>
+<li id="searchbutton" class="btn btn-lg btn-danger mob-nav"><a><i class="fa fa-search"></i></a></li>
+<nav id="mainNav" class="navbar navbar-inverse navbar-fixed-top">
+	<div class="container">
+		<div class="navbar-header">
+			<a href="/" title="PassorFail.pk"><img class="pull-left logo" src="{{ url_for('static', filename='img/logo-small.png') }}" alt=""></a>
+			<a class="navbar-brand" href="/">PassOrFail.pk</a>
+		</div>
+		<div id="navbar">
+			<ul class="nav navbar-nav">
+				<li><a href="{{ url_for('products') }}"><i class="fa fa-bolt"></i> Latest</a></li>
+				<li><a href="{{ url_for('products', view='trending') }}"><i class="fa fa-bullhorn"></i> Trending</a></li>
+				<li class="dropdown">
+		          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="fa fa-map-signs"></i> Categories <span class="caret"></span></a>
+		          <ul class="dropdown-menu">
+		          	{% for a in top_categories()%}
+		          		<li><a href="{{ url_for('category', category=a) }}">{{a|title}}</a></li>
+		          	{% endfor %}
+		          </ul>
+			</ul>
+			<ul class="nav navbar-nav navbar-right">
+					<li id="searchbutton"><a><i class="fa fa-search"></i></a></li>
+				{% if current_user.is_authenticated() %}
+					<li><a href="{{ url_for('addproduct') }}"><i class="fa fa-plus-square"></i> New</a></li>
+					<li class="active"><a href="{{ url_for('profile', user=current_user.nickname) }}">{{ current_user.nickname }} &nbsp;<span class="badge points">{{ current_user.points }}</span></a></li>
+					<li><a href="{{ url_for('logout') }}"><i class="fa fa-sign-out"></i> Log out</a></li>
+				{% else %}
+					<li><a href="{{ url_for('signup') }}"><i class="fa fa-sign-in"></i> Sign Up</a></li>
+					<li><a href="{{ url_for('login') }}"><i class="fa fa-user"></i> Login</a></li>
+				{% endif %}
+			</ul>
+		</div>
+		<!--/.navbar-collapse -->
+	</div>
+</nav>
+<!-- Sidebar -->
+<div class="mob-nav" id="sidebar-wrapper">
+    <ul class="sidebar-nav nav navbar-nav">
+        <li class="sidebar-brand">
+            <a href="/" title="PassorFail.pk"><img src="{{ url_for('static', filename='img/logo-small.png') }}" alt=""></a>
+        </li>
+        <li><a href="{{ url_for('products') }}"><i class="fa fa-bolt"></i> Latest</a></li>
+		<li><a href="{{ url_for('products', view='trending') }}"><i class="fa fa-bullhorn"></i> Trending</a></li>
+		<li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="fa fa-map-signs"></i> Categories <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+          	{% for a in top_categories()%}
+          		<li><a href="{{ url_for('category', category=a) }}">{{a|truncate(20, True)}}</a></li>
+          	{% endfor %}
+          </ul>
+		{% if current_user.is_authenticated() %}
+			<li><a href="{{ url_for('addproduct') }}"><i class="fa fa-plus-square"></i> New</a></li>
+			<li class="active"><a href="{{ url_for('profile', user=current_user.nickname) }}">{{ current_user.nickname }} &nbsp;<span class="badge points">{{ current_user.points }}</span></a></li>
+			<li><a href="{{ url_for('logout') }}"><i class="fa fa-sign-out"></i> Log out</a></li>
+		{% else %}
+			<li><a href="{{ url_for('signup') }}"><i class="fa fa-sign-in"></i> Sign Up</a></li>
+			<li><a href="{{ url_for('login') }}"><i class="fa fa-user"></i> Login</a></li>
+		{% endif %}
+    </ul>
+</div>
+<!-- /#sidebar-wrapper -->

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		<title>{% block title %}{% endblock %}</title>
+		<meta name="description" content="{% block meta_description %}{% endblock %}" />
+
+		{% assets "bootstrap" %}
+		<!-- Bootstrap CSS -->
+		<link rel="stylesheet" type="text/css" href="{{ ASSET_URL }}">
+		{% endassets %}
+		<!--Font Awesome-->
+		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/font-awesome.min.css') }}">
+		<!--Sweet Alert -->
+		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/sweetalert.css') }}">
+		<link rel="stylesheet" media="(max-width: 768px)" type="text/css" href="{{ url_for('static', filename='css/simple-sidebar.css') }}">
+		{% assets "custom_sass" %}
+		<!-- Custom Sass -->
+		<link rel="stylesheet" type="text/css" href="{{ ASSET_URL }}">
+		{% endassets %}
+
+		<link rel="shortcut icon" type="image/png" href="{{ url_for('static', filename='img/favicon.png') }}"/>
+
+		<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+		<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+		<!--[if lt IE 9]>
+			<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+			<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+		<![endif]-->
+		{% block meta %}
+		<!-- Schema.org markup for Google+ -->
+		<meta itemprop="name" content="{{ self.title() }}">
+		<meta itemprop="description" content="{{ self.meta_description() }}">
+		<meta itemprop="image" content="{% block meta_photo %}{% endblock %}">
+
+		<!-- Twitter Card data -->
+		<meta name="twitter:card" content="summary_large_image">
+		<meta name="twitter:site" content="@PassorFailPk">
+		<meta name="twitter:title" content="{{ self.title() }}">
+		<meta name="twitter:description" content="{{ self.meta_description() }}">
+		<meta name="twitter:creator" content="@PassorFailPk">
+		<!-- Twitter summary card with large image must be at least 280x150px -->
+		<meta name="twitter:image:src" content="{{ self.meta_photo() }}">
+
+		<!-- Open Graph data -->
+		<meta property="og:title" content="{{ self.title() }}" />
+		<meta property="og:type" content="article" />
+		<meta property="og:url" content="{% block meta_url %}{% endblock %}" />
+		<meta property="og:image" content="{{ self.meta_photo() }}" />
+		<meta property="og:description" content="{{ self.meta_description() }}" />
+		<meta property="og:site_name" content="{{site_url()}}" />
+		{% endblock %}
+	</head>
+	<body id="page-top">
+		<div id="wrapper">
+			{% include 'navbar.html' %}
+			<div id="page-content-wrapper">
+
+				{% include 'searchform.html' %}
+				{% block header %}
+				{% endblock %}
+				
+				<div class="container">
+				{% for category, message in get_flashed_messages(with_categories=true) %}
+					<div class="alert alert-{{ category }} alert-dismissable">
+						<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+						<p>{{ message }}</p>
+					</div>
+				{% endfor %}
+				</div>
+
+				{% block content %}{% endblock %}
+
+				{% block footer %}
+				<div class="container">
+					<div class="footer-nav pull-right">
+					    <ul>
+						    <li><a href="/legal/support">Support</a></li>
+						    <li><a href="/legal/terms_of_service">Terms of Service</a></li>
+						    <li><a href="/legal/privacy_policy">Privacy Policy</a></li>
+						    <li>&copy; Copyright 2015 - PassOrFail.pk, All Rights Reserved</li>
+					    </ul>
+					    <br>
+					</div>
+				</div>
+				{% endblock %}
+			</div><!--page-content-wrapper-->
+		</div><!--wrapper-->
+
+		<!-- jQuery -->
+		<script src="{{ url_for('static', filename='js/jquery-2.1.4.min.js') }}" type="text/javascript" charset="utf-8" ></script>
+		<!-- jQuery UI Auticomplete -->
+		<script src="{{ url_for('static', filename='js/jquery-ui.min.js') }}" type="text/javascript" charset="utf-8"></script>
+		<!-- Bootstrap JavaScript -->
+		<script src="{{ url_for('static', filename='js/bootstrap.min.js') }}" type="text/javascript" charset="utf-8"></script>
+		<!-- Circle Meter -->
+		<script src="{{ url_for('static', filename='js/jquery.percentageloader-0.1.min.js') }}" type="text/javascript" charset="utf-8"></script>
+		<!-- Infinite Scroll -->
+		<script src="{{ url_for('static', filename='js/jquery.infinitescroll.min.js') }}" type="text/javascript" charset="utf-8"></script>
+		<!-- Sweet Alert -->
+		<script src="{{ url_for('static', filename='js/sweetalert.min.js') }}" type="text/javascript" charset="utf-8"></script>
+		<!--Pace: http://github.hubspot.com/pace/docs/welcome/-->
+		<script src="{{ url_for('static', filename='js/pace.min.js') }}" type="text/javascript" charset="utf-8"></script>
+		
+		
+		
+		{% block footerscripts %}
+			<script type="text/javascript">$("#searchform").hide().removeClass('hidden');;</script>
+			<script type="text/javascript">//search bar
+				togglesearch = function togglesearch(){
+					$('li#searchbutton').toggleClass('active');
+					$("#searchform").slideToggle( 100, "easeOutExpo" );
+				}
+				$('li#searchbutton').on('click',function () {
+					togglesearch();
+				});
+				$(document).click(function(e){
+				    if( $(e.target).closest("#searchform, li#searchbutton").length > 0 ) {
+				        return false;
+				    }
+				    if ($( "li#searchbutton" ).hasClass("active")) {
+				    	togglesearch();
+					};
+				});
+			</script>
+			<script>
+		    $("#menu-toggle").click(function(e) {
+		        e.preventDefault();
+		        $("#wrapper").toggleClass("toggled");
+		    });
+		    </script>
+			<script type="text/javascript" charset="utf-8">
+				$(function () {
+			        $("[rel='votetip']").tooltip('show');
+			        $("[data-toggle='tooltip']").tooltip();
+			    });
+			</script>
+			 <script>
+				  $(function() {
+				    $( "#search, #newimgtitle, #newvidtitle, #newaudtitle" ).autocomplete({
+				      source: function( request, response ) {
+				        $.ajax({
+				          url: "/pf/autocomplete",
+				          dataType: "json",
+				          data: {
+				            q: request.term
+				          },
+				          success: function( data ) {
+				            response( data );
+				          }
+				        });
+				      },
+				      minLength: 2,
+				      select: function( event, ui ) {
+				      	window.location.href = ui.item.url;
+				      },
+				      open: function() {
+				        $( this ).removeClass( "ui-corner-all" ).addClass( "ui-corner-top" );
+				      },
+				      close: function() {
+				        $( this ).removeClass( "ui-corner-top" ).addClass( "ui-corner-all" );
+				      }
+				    });
+				  });
+					jQuery.ui.autocomplete.prototype._resizeMenu = function () {
+					  var ul = this.menu.element;
+					  ul.outerWidth(this.element.outerWidth());
+					}
+			  </script>
+			  	<script type="text/javascript" charset="utf-8">
+				    // the items you will be loading more of
+				    $('div#infcontent').infinitescroll({
+
+				        navSelector  : "div#pagination",            
+				                       // selector for the paged navigation (it will be hidden)
+				        nextSelector : "a#next",    
+				                       // selector for the NEXT link (to page 2)
+				        itemSelector : "div.item",        
+				                       // selector for all items you'll retrieve
+				        donetext     : ""
+
+				    });
+				</script>
+		{% endblock %}
+	</body>
+</html>

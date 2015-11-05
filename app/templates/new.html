@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block title %}Add New - Pass or Fail{% endblock %}
+
+{% block content %}
+	<div class="container main new">
+		<div class="col-md-6">
+			<!-- Nav tabs -->
+			{% if current_user.is_authenticated() %}
+			<h1>Add something new</h1><br>
+			<ul class="nav nav-tabs" role="tablist">
+				<li role="presentation" class="active image-tab"><a href="#image" aria-controls="image" role="tab" data-toggle="tab"><i class="fa fa-picture-o"></i> Image</a></li>
+				<li role="presentation" class="video-tab"><a href="#video" aria-controls="video" role="tab" data-toggle="tab"><i class="fa fa-video-camera"></i> Video</a></li>
+				<li role="presentation" class="audio-tab"><a href="#audio" aria-controls="audio" role="tab" data-toggle="tab"><i class="fa fa-music"></i> Audio</a></li>
+			</ul>
+			<div class="tab-content">
+				<div role="tabpanel" class="tab-pane fade in active" id="image">
+					<h2>Add image post</h2>
+					<form id="imgform" method="POST" action="{{ url_for('addproduct') }}" enctype="multipart/form-data">
+					    {{ imgform.hidden_tag() }}
+					    <div class="form-group">
+					    	{{ imgform.title.label }}
+					    	{{ imgform.title(size=20, id="newimgtitle", class_="form-control", maxlength="70") }}
+					    </div>
+					    <div class="form-group">
+					    	{{ imgform.category.label }}
+					    	{{ imgform.category(class_="form-control") }}
+					    </div>
+					    <div class="form-group">
+					    	{{ imgform.description.label }}
+					    	{{ imgform.description(rows="2", class_="form-control", maxlength="500", placeholder="Description", autocomplete="off") }}
+					    </div>
+					    <div class="form-group">
+					    	{{ imgform.image.label }}
+					    	{{ imgform.image(size=20, class_="btn btn-default btn-file") }}
+					    	<small>Max Image Size: 10mb</small>
+					    </div>
+					    <input type="hidden" name="formtype" value="image" hidden>
+					    <button class="btn btn-primary btn-block" type="submit">Submit</button>
+					</form>
+				</div>
+
+				<div role="tabpanel" class="tab-pane fade" id="video">
+					<h2>Add video post</h2>
+					<form method="POST" action="{{ url_for('addproduct') }}">
+					    {{ vidform.hidden_tag() }}
+					    <div class="form-group">
+					    	{{ vidform.title.label }} {{ vidform.title(size=20, id="newvidtitle", class_="form-control", maxlength="70") }}
+					    </div>
+					    <div class="form-group">
+					    	{{ vidform.category.label }}
+					    	{{ vidform.category(class_="form-control") }}
+					    </div>
+					    <div class="form-group">
+					    	{{ vidform.description.label }}
+					    	{{ vidform.description(rows="2", class_="form-control", maxlength="500", placeholder="Description", autocomplete="off") }}
+					    </div>
+					    <div class="form-group">
+					    	{{ vidform.video.label }} {{ vidform.video(size=20, class_="form-control") }}
+					    	<small>Enter URL of the video page<br>Supported video platforms: Daily Motion, YouTube, Vimeo.com, Tune.pk, Playit.pk, Vine.co</small>
+					    </div>
+					    <input type="hidden" name="formtype" value="video" hidden>
+					    <button class="btn btn-primary btn-block" type="submit">Submit</button>
+					</form>
+				</div>
+
+				<div role="tabpanel" class="tab-pane fade" id="audio">
+					<h2>Add Audio post</h2>
+					<form method="POST" action="{{ url_for('addproduct') }}">
+					    {{ vidform.hidden_tag() }}
+					    <div class="form-group">
+					    	{{ vidform.title.label }} {{ vidform.title(size=20, id="newaudtitle", class_="form-control", maxlength="70") }}
+					    </div>
+					    <div class="form-group">
+					    	{{ vidform.category.label }}
+					    	{{ vidform.category(class_="form-control") }}
+					    </div>
+					    <div class="form-group">
+					    	{{ vidform.description.label }}
+					    	{{ vidform.description(rows="2", class_="form-control", maxlength="500", placeholder="Description", autocomplete="off") }}
+					    </div>
+					    <div class="form-group">
+					    	<label for="video">Audio URL</label> {{ vidform.video(size=20, class_="form-control") }}
+					    	<small>Enter a SoundCloud Audio URL<br></small>
+					    </div>
+					    <input type="hidden" name="formtype" value="video" hidden>
+					    <button class="btn btn-primary btn-block" type="submit">Submit</button>
+					</form>
+				</div>
+			</div>
+			{% else %}
+				<p>You need to be logged in to add products</p>
+			{% endif %}
+		</div>
+		<div class="col-md-6">
+
+		</div>
+	</div>
+
+{% endblock %}
+
+{% block footerscripts %}
+{{ super() }}
+<script type="text/javascript">
+//binds to onchange event of your input field
+$('#image').bind('change', function() {
+	var fsize = $(this).find("input:file").prop('files')[0].size;
+	var maxsize = 10 * 1000 * 1024;
+	if (fsize > maxsize) {
+		var error_text = "The file you are trying to upload is greater than 10mb, please choose a smaller file.";
+		swal({   title: "File too big",   text: error_text,   type: "error",   confirmButtonText: "Ok" });
+	};
+
+});
+//DISABLE FIRST OPTION SELECt
+$("select").prop("selectedIndex", -1);
+	</script>
+{% endblock %}

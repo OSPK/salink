@@ -1,0 +1,185 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.title }} - Pass or Fail?{% endblock %}
+{% block meta_photo %}{{site_url()}}{{ url_for('static', filename='uploads/' + product.image) }}{% endblock %}
+{% block meta_description %}{% if product.description %}{{ product.description }}{% endif %}{% endblock %}
+{% block meta_url %}{{site_url()}}{{ request.path }}{% endblock %}
+
+{% block content %}
+<div class="container margin-top">
+	<div class="row">
+		<div class="col-md-8">
+			<div class="product" itemscope itemtype="http://schema.org/Product">
+				{% if current_user.is_authenticated() and product.owner_id == current_user.id %}
+				<div class="owner_menu">
+					<form id="del_product" action="{{ url_for('delete_product', id=product.id) }}" method="post">
+						<div class="btn-group">
+						  <button type="button" class="btn btn-xs btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						    <i class="fa fa-chevron-down"></i></span>
+						  </button>
+						  <ul class="dropdown-menu pull-right">
+						    <li><button type="submit" class="pdelbutton"><i class="fa fa-trash"></i> Delete</button></li>
+						  </ul>
+						</div>
+					</form>
+				</div>
+				{% endif %}
+
+
+				<h1>{{ product.title }}</h1>
+				<span class="small product_meta">Posted by <strong><a href="{{ url_for('profile', user=product.user.nickname) }}">{{ product.user.nickname }}</a></strong>, {{ ago_format(product.pub_date) }} in <strong><a href="{{ url_for('category', category=product.category) }}">{{ product.category|truncate(40, True) }}</a></strong></span>
+				<p class="description">{% if product.description %}{{ product.description }} {% endif %}</p>
+				<div class="product_photo">
+					{% if product.video is not none %}
+					<iframe style="width:100%;min-height:410px;overflow:hidden;" src="{{product.video|replace("youtube.com/v", "playit.pk/embed")|replace("autoPlay=1", "autoPlay=0")}}" frameborder="0" scrolling="no" allowfullscreen></iframe>
+					{% else %}
+					<img class="img-responsive" itemprop="image" src="{{ product.image|thumbnail('800x600', quality=100)|replace("_800x600_100.gif", ".gif") }}" alt="">
+					{% endif %}
+				</div>
+				{% if product.passes or product.fails %}
+					<div class="progress">
+					  <div class="progress-bar progress-bar-success" style="width: {{ (product.passes/(product.passes + product.fails))*100 }}%">
+					    <span class="passes">{{ product.passes }}</span>
+					  </div>
+					  <div class="progress-bar progress-bar-danger" style="width: {{ (product.fails/(product.passes + product.fails))*100 }}%">
+					    <span class="fails">{{ product.fails }}</span>
+					  </div>
+					</div>
+				{% else %}
+					<div class="progress hidden">
+					  <div class="progress-bar progress-bar-success" style="">
+					    <span class="passes"></span>
+					  </div>
+					  <div class="progress-bar progress-bar-danger" style="">
+					    <span class="fails"></span>
+					  </div>
+					</div>
+				{% endif %}
+
+				{% if current_user.is_authenticated() and not already_voted %}
+				<div class="row no-gutter">
+					<div class="col-md-6 col-sm-6 col-xs-6">
+						<div class="passform" rel="passtip" data-toggle="tooltip" data-trigger="manual" data-placement="top" title="Your vote">
+							<form id="vote_formpass" action="{{ url_for('product_post_vote', id=product.id) }}" class="form-horizontal" method="post">
+							<input type="text" name="vote" value="pass" class="hidden" hidden>
+							<input type="text" name="votechange" value="pass" class="hidden" hidden>
+							<button class="pull-right vote pass">Pass</button>
+							</form>
+						</div>
+					</div>
+					<div class="col-md-6 col-sm-6 col-xs-6">
+						<div class="failform" rel="failtip" data-toggle="tooltip" data-trigger="manual" data-placement="top" title="Your vote">
+							<form id="vote_formfail" action="{{ url_for('product_post_vote', id=product.id) }}" class="form-horizontal" method="post">
+							<input type="text" name="vote" value="fail" class="hidden" hidden>
+							<input type="text" name="votechange" value="fail" class="hidden" hidden>
+							<button class="pull-left vote fail">Fail</button>
+							</form>
+						</div>
+					</div>
+				</div>
+				<div id='vinst' class="small text-center">Vote to add your review</div>
+				{% endif %}
+
+				{% if already_voted %}
+					<div class="row no-gutter">
+						<div class="col-md-6 col-sm-6 col-xs-6">
+							<div class="passform" rel="passtip" data-toggle="tooltip" data-trigger="manual" data-placement="top" title="Your vote">
+								<form id="vote_formpass" action="{{ url_for('product_post_vote', id=product.id) }}" class="form-horizontal" method="post">
+								<input type="text" name="votechange" value="pass" class="hidden" hidden>
+								<button class="pull-right vote pass {% if my_vote=="pass" %}selected{% endif %}" {% if my_vote == "pass" %}disabled="disabled"{%endif%}>Pass</button>
+								</form>
+							</div>
+						</div>
+						<div class="col-md-6 col-sm-6 col-xs-6">
+							<div class="failform" rel="failtip" data-toggle="tooltip" data-trigger="manual" data-placement="top" title="Your vote">
+								<form id="vote_formfail" action="{{ url_for('product_post_vote', id=product.id) }}" class="form-horizontal" method="post">
+								<input type="text" name="votechange" value="fail" class="hidden" hidden>
+								<button class="pull-left vote fail {% if my_vote == "fail" %}selected{%endif%}" {% if my_vote == "fail" %}disabled="disabled"{%endif%}>Fail</button>
+								</form>
+							</div>
+						</div>
+					</div>
+				{% endif %}
+				<div class="single small product-meta clearfix">
+		            <i class="fa fa-eye"></i> {% if product.views %}{{ product.views }}{% else %}0{% endif %} views | 
+		            <i class="fa fa-hand-o-up"></i> <span id="votecount">{% if product.passes or product.fails %}{{ product.passes+product.fails }}{% else %}0{% endif %}</span> votes | 
+		            <i class="fa fa-comments"></i> <span id="reviewcount">{% if product.review_count %}{{ product.review_count }}{% else %}0{%endif%}</span> reviews | 
+		            <i class="fa fa-clock-o"></i> {{ago_format(product.pub_date)}}
+		        </div>
+				<a href="#review_form" class="writerev {%if already_voted == False %}hidden{% endif %}"><button class="btn btn-block btn-primary">Write Review</button></a>
+				{% if not current_user.is_authenticated() %}<p class="h4 text-center"><a href="{{ url_for('signup') }}">Sign up</a> or <a href="{{ url_for('login') }}">Log in</a> to participate</p>{% endif %}
+			</div><!--product-->
+			<div class="pull-right clearfix"><br>
+				<button class="btn btn btn-default" id="reload"><i class="fa fa-refresh"></i></button>
+			</div>
+			<div id="reviews" class="reviews">
+				<h2>Reviews</h2>
+				{% if review_exists == False %}
+						<h4 class="noreviews">No reviews for this have been added yet, you can be the Fire Starter!</h4>
+				{% endif %}
+				{% if not current_user.is_authenticated() %}<br><p class="h4 text-center"><a href="{{ url_for('signup') }}">Sign up</a> or <a href="{{ url_for('login') }}">Log in</a> to review</p><br>{% endif %}
+				{% for review in reviews|sort(attribute='pub_date') %}
+					{% if review.review_text is not none %}
+					<div id="review-{{ review.id }}" class="review" itemprop="review" itemscope itemtype="http://schema.org/Review">
+						{% if current_user.is_authenticated() and current_user.id == review.author_id %}
+						<div class="owner_menu delrev">
+							<form id="del_review-{{review.id}}" action="{{ url_for('delete_review', id=review.id) }}" method="post">
+								    <button data-toggle="tooltip" data-placement="bottom" title="Delete" stype="submit" class="rdelbutton" id="{{review.id}}"><i class="fa fa-trash"></i></button>
+							</form>
+						</div>
+						{% endif %}
+						<span class="small author"><i class="fa fa-user"></i>&nbsp;&nbsp;<a itemprop="author" href="{{ url_for('profile', user=review.user.nickname) }}">{{ review.user.nickname }}</a></span><br>
+						{{review.review_text}}<br>
+						<div class="review_meta small">
+							<meta itemprop="datePublished" content="{{ review.pub_date }}"> <span class="small pub_date">{{ ago_format(review.pub_date) }}</span>
+						</div>
+					</div>
+					{% endif %}
+				{% endfor %}
+			</div><!--reviews-->
+			{% if current_user.is_authenticated() %}
+				<form id="review_form" action="{{ url_for('product_post_review', id=product.id) }}" class="form-horizontal review_text reviewform {%if already_voted == False %}hidden{% endif %}" method="post">
+					{{ reviewform.hidden_tag() }}
+					<div class="form-group">
+						<div class="small pull-right wordcount">Characters left: <span id="charNum">500</span></div>
+						{{ reviewform.review_text(rows="2", onkeyup="countChar(this)", class_="form-control", maxlength="500", placeholder="Write a Review", autocomplete="off") }}
+						
+					</div>
+					<div class="form-group">
+						<button type="submit" class="btn btn-primary btn-lg btn-block">Submit</button>
+					</div>
+				</form>
+			{% endif %}
+		</div><!--col-md-6-->
+		{% include 'related_boxes.html' %}
+	</div><!--row-->
+</div><!--container-->
+<style type="text/css">
+.footer-nav {
+  padding-bottom: 20px;
+}
+</style>
+{% endblock %}
+
+{% block footerscripts %}
+			{{ super() }}
+		<script type="text/javascript">
+			var nextlink = $('#next').attr("href");
+			var previouslink = $('#previous').attr("href");
+			$(document).keydown(function(e) {
+				{% if prod_prev is not none %}
+			    if(e.which == 37) {
+			        location.href = previouslink;
+			    }
+			    {% endif %}
+			    {% if prod_next is not none %}
+			    if(e.which == 39) {
+			    	location.href = nextlink;
+			        //alert();
+			    }
+			    {% endif %}
+			});
+		</script>
+		<script src="/static/js/jquery.form.js"></script> 
+	    <script src="{{ url_for('static', filename='js/product-page.js') }}" type="text/javascript" charset="utf-8" defer></script>
+{% endblock %}

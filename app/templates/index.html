@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}Pass or Fail - Share, Review, Find Something New{% endblock %}
+{% block meta_photo %}{{site_url()}}{{ url_for('static', filename='img/pf-cover.jpg') }}{% endblock %}
+{% block meta_description %}Pakistan's top review site - Find whats best in products, services, restaurants, places, celebrities and everything else.{% endblock %}
+{% block meta_url %}{{site_url()}}{{ request.path }}{% endblock %}
+
+{% block header %}
+    <header class="jumbotron">
+        <div class="container">
+            <div class="row text-center">
+                <div class="col-lg-8 col-lg-offset-2 clearfix">
+                <h1>Share / Review,<br>Find Something New</h1><br>
+                </div><br>
+            </div>
+            <div class="row no-gutter">
+                <div class="col-md-6 col-sm-6 col-xs-6">
+                    <a href="{{ url_for('signup') }}">
+                        <button class="pull-right vote pass">Sign Up</button>
+                    </a>
+                </div>
+                <div class="col-md-6 col-sm-6 col-xs-6">
+                    <a href="{{ url_for('login') }}">
+                        <button class="pull-left vote fail">Log In</button>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+    <section class="row">
+        <div class="col-sm-4 vpanel panel1">
+            <div class="inner">
+                <img class="img-responsive" src="{{ url_for('static', filename='img/panel1.png') }}">
+                <h3>Review Products, Services, People, Places</h3>
+            </div>
+        </div>
+        <div class="col-sm-4 vpanel panel2">
+            <div class="inner">
+                <img class="img-responsive" src="{{ url_for('static', filename='img/panel2.png') }}">
+                <h3>Enjoy Quality Reviews and Products, Avoid Stress</h3>
+            </div>
+        </div>
+        <div class="col-sm-4 vpanel panel3">
+            <div class="inner">
+                <img class="img-responsive" src="{{ url_for('static', filename='img/panel3.png') }}">
+                <h3>Know What Sucks and What's Awesome</h3>
+            </div>
+        </div>
+    </section>
+    <section class="row hidden-xs text-center">
+        <br>
+        <h2>How Does It Work</h2>
+        <br>
+        <img src="{{ url_for('static', filename='img/how_does_it_work.png') }}">
+    </section>
+{% endblock %}
+
+{% block content %}
+    <section class="home products" itemtype="http://schema.org/ItemList">
+        <div class="container">
+            <h2 class="text-center">Trending Right Now</h2><hr>
+            <div class="row">
+                {% for product in products.items %}
+                    {% include 'product_boxes.html' %}
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    <br>
+    <div class="row no-gutter">
+        <div class="col-md-6 col-sm-6 col-xs-6">
+            <a href="{{ url_for('signup') }}">
+                <button class="pull-right vote pass">Sign Up</button>
+            </a>
+        </div>
+        <div class="col-md-6 col-sm-6 col-xs-6">
+            <a href="{{ url_for('login') }}">
+                <button class="pull-left vote fail">Log In</button>
+            </a>
+        </div>
+    </div>
+{% endblock %}
+
+{% block futurefooter %}
+<footer class="bg-dark">
+    <div class="container text-center">
+        <div class="call-to-action">
+            <h2>Download our app and use it all day!</h2><br>
+            <a href="#" class="btn btn-default btn-lg">Download Now!</a>
+        </div>
+    </div>
+</footer>
+{% endblock %}

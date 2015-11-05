@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}{{ user.nickname }} Profile - Pass or Fail{% endblock %}
+
+{% block content %}
+<div class="container main">
+    <div class="profile-page">
+        <div class="profile text-center">
+            <h1>{{user.nickname}}</h1>
+            {% if user == current_user %}
+            	<small>Edit Profile</small>
+            {% endif %}
+            <p>Became member {{ago_format(user.join_date)}}</p>
+            <div class="statusbar-container">
+                <ul class="statusbar" role="tablist">
+                    <span class="labl">Stats</span>
+                    <li role="presentation" class="active"><a href="#products" aria-controls="products" role="tab" data-toggle="tab"><span class="labl">Posts</span><span class="value badge bd-products">{{ products.total }}</span></a></li><li><span class="labl">Votes</span><span class="value badge bd-votes">{{ user.votes.all()|length }}</span></li><li role="presentation"><a href="#reviews" aria-controls="reviews" role="tab" data-toggle="tab"><span class="labl">Reviews</span><span class="value badge bd-reviews">{{ reviews|length }}</span></a></li><li><span class="labl">Points</span><span class="value badge points">{{ user.points }}</span></li>
+                </ul>
+            </div>
+        </div><!-- /card-container -->
+        <br>
+        <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade in active" id="products">
+                <section class="products main" itemtype="http://schema.org/ItemList">
+                    <div id="infcontent" class="row products-bg"><br>
+                        {% for product in products.items %}
+                                    {% include 'product_boxes.html' %}
+                        {% else %}
+                            <h2>You have not added anything</h2>
+                        {% endfor %}
+                    </div>
+                </section>
+            </div>
+            <div role="tabpanel" class="tab-pane fade in" id="reviews">
+                <div class="review-cards">
+                    {% for review in reviews %}
+                        <div class="col-md-6 ritem">
+                            <div class="review-card">
+                                <div class="review-meta">
+                                    <div class="small meta-inner"><strong>{{ user.nickname }}</strong> reviewed <a href="{{ url_for('product', id=review.product.id) }}">{{ review.product.title|truncate(15, True) }}</a> {{ago_format(review.pub_date)}}</div>
+                                </div>
+                                <div class="review-text">
+                                    <a href="{{ url_for('product', id=review.product.id) }}#review-{{ review.id }}"><h3>{{ review.review_text|truncate(240, True)}}</h3></a>
+                                </div>
+                            </div> 
+                        </div>
+                    {% else %}
+                        <h2>You have not reviewed anything</h2>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="pagination" class="container">
+    {% if products.has_prev %}<a id="previous" class="pull-left hidden" href="{{ url_for('profile', user=user.nickname, view='p',page=products.prev_num) }}">&lt;&lt; Newer posts</a>{% endif %}
+    {% if products.has_next %}<a id="next" class="pull-right hidden" href="{{ url_for('profile', user=user.nickname, view='p', page=products.next_num) }}">Older posts &gt;&gt;</a>{% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Log in - Pass or Fail{% endblock %}
+
+{% block content %}
+<div class="container main">
+  <div class="col-md-12">
+
+    {% for message in form.nickname.errors %}
+      <div class="alert alert-danger alert-dismissable">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+        <p>{{ message }}</p>
+      </div>
+    {% endfor %}
+     
+    {% for message in form.password.errors %}
+      <div class="alert alert-danger alert-dismissable">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+        <p>{{ message }}</p>
+      </div>
+    {% endfor %}
+
+      <div class="card card-container">
+          <div class="text-center">
+            <h1>Log In</h1>
+          </div>
+          <form class="form-signin" action="{{ url_for('login') }}" method="post">
+              {{ form.hidden_tag() }}
+              <span id="reauth-email" class="reauth-email"></span>
+              {{ form.nickname(class_="form-control", id="inputEmail", placeholder="Username") }}
+              {{ form.password(class_="form-control", id="inputPassword", placeholder="Password") }}
+              {{ form.submit(class_="btn btn-lg btn-primary btn-block btn-signin") }}
+          </form><!-- /form -->
+          <a href="#" class="forgot-password small">
+              Forgot the password?
+          </a>
+          <div class="text-center"><br>
+            <small>Easy Login with</small>
+            <div class="btn-group">
+              <a href="{{ url_for('oauth_authorize', provider='facebook') }}"><button type="button" class="btn btn-primary"><i class="fa fa-facebook"></i> Facebook</button></a>
+              <a href="{{ url_for('oauth_authorize', provider='twitter') }}"><button type="button" class="btn btn-info"><i class="fa fa-twitter"></i> Twitter</button></a>
+            </div>
+          </div>
+      </div><!-- /card-container -->
+
+
+  </div>
+</div>
+{% endblock %}

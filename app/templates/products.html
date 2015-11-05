@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}{{view|replace("-", " ")|title}} - Pass or Fail{% endblock %}
+
+{% block content %}
+    {% if results == 1 %}
+        <div class="text-center" style="padding:10px;padding-bottom: 0px;">
+            <h2>You searched for '<strong>{{search}}</strong>'</h2>
+            <h1>{{products.items|length}} found</h1>
+        </div>
+    {% endif %}
+    {% if results == 0 %}
+        <div class="text-center" style="padding:10px;padding-bottom: 0px;">
+            <h2>You searched for '{{search}}'</h2>
+            <h1>No Results Found!</h1>
+        </div>
+    {% endif %}
+    <section class="products main" itemtype="http://schema.org/ItemList">
+        <div class="container">
+            {% if not search %}
+            <style type="text/css" media="screen">
+                .pill{{view}} {background: #242632;color: #FFF;}
+            </style>
+                <div class="row" style="padding:15px;margin-bottom:15px;">
+                    <a href="{{ url_for('products', view='latest') }}" class="btn btn-default btn-sm pilllatest">Latest</a>
+                    <a href="{{ url_for('products', view='trending') }}" class="btn btn-default btn-sm pilltrending">Trending</a>
+                    <a href="{{ url_for('products', view='most-viewed') }}" class="btn btn-default btn-sm pillmost-viewed">Most viewed</a>
+                    <a href="{{ url_for('products', view='most-reviewed') }}" class="btn btn-default btn-sm pillmost-reviewed">Most Reviewed</a>
+                    <a href="{{ url_for('products', view='passing') }}" class="btn btn-default btn-sm pillpassing">Passing</a>
+                    <a href="{{ url_for('products', view='failing') }}" class="btn btn-default btn-sm pillfailing">Failing</a>
+                    <a href="{{ url_for('products', view='tied') }}" class="btn btn-default btn-sm pilltied">Tied</a>
+                </div>
+            {% endif %}
+            <div class="row" id="infcontent">
+                {% for product in products.items %}
+                    {% include 'product_boxes.html' %}
+                {% endfor %}
+            </div>
+        </div>
+    </section><br>
+    <div id="pagination" class="container">
+    {% if products.has_prev %}<a id="previous" class="pull-left hidden" href="{{ url_for('products', view=view,page=products.prev_num) }}">&lt;&lt; Newer posts</a>{% endif %}
+    {% if products.has_next %}<a id="next" class="pull-right hidden" href="{{ url_for('products', view=view, page=products.next_num) }}">Older posts &gt;&gt;</a>{% endif %}
+    </div>
+{% endblock %}

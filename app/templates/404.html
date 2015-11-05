@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Error - {{e}}{% endblock %}
+
+{% block content %}
+<div class="container main">
+  <div class="col-md-12">
+        <div class="card card-container cfull">
+            <div class="text-center">
+              {% if e == 404 %}
+                <img class="img-responsive" src="{{ url_for('static', filename='img/trade.svg') }}" />
+                <h1>{{e}} - Not found</h1>
+                <small>Maybe it was deleted, maybe it never existed</small>
+              {% endif %}
+              {% if e == 413 %}
+                <img class="img-responsive" src="{{ url_for('static', filename='img/sportscycle.svg') }}" />
+                <h1>{{e}} - The file size was larger than 2mb</h1>
+                <small>Try something smaller</small>
+              {% endif %}
+              {% if e == 500 %}
+                <img class="img-responsive" src="{{ url_for('static', filename='img/industry.svg') }}" />
+                <h1>{{e}} - Something broke</h1>
+                <small>We're fixing this, probably</small>
+              {% endif %}
+            </div>
+        </div><!-- /card-container -->
+  </div>
+</div>
+{% endblock %}

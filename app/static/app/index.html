@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>My App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+    <link rel="stylesheet" href="app.min.css">
+    <style type="text/css" media="screen">
+      * {
+        box-sizing:border-box;
+      }
+      div#container {
+        width: 90%;
+        margin:0px auto;
+      }
+      .prod-img {
+        width:100%;
+        margin: 10px auto;
+        padding: 0px;
+      }
+      button {
+        width:100%;
+        height:50px;
+        background: #222430;
+        color: white;
+        border:0px;
+      }
+      .description {
+        font-style: 1em;
+        padding:20px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="app-page" data-page="home">
+      <div class="app-topbar">
+        <div class="app-title">Home page</div>
+      </div>
+      <div class="app-content">
+        <div id="container">
+        <div class="products"></div>
+        <div class="app-section">
+          <div class="app-button" data-target="page2">Go to Page 2</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="app-page" data-page="page2">
+      <div class="app-topbar">
+        <div class="app-button left" data-back data-autotitle></div>
+        <div class="app-title">Page 2</div>
+      </div>
+      <div class="app-content">
+        Page 2 is lonely
+      </div>
+    </div>
+
+    <script src="zepto.js"></script>
+    <script src="app.min.js"></script>
+    <script>
+      App.controller('home', function (page) {
+        findAll();
+        function findAll() {
+          $.ajax({
+              url: '/api/pf',
+              type: 'GET',
+              success: getAll
+          });
+        }
+        function getAll( data ) {
+          var products = data.products
+          var length = products.length
+          $(".products").empty();
+            for (var i = 0; i < length; i++) {
+              var tit = "<a class='prod' id="+products[i].id+" onclick='findOne(id);'><h2>"+products[i].title+"</h2></a><br>";
+              var image = "<img class='prod-img' id="+products[i].id+" onclick='findOne(id);' src='/static/uploads/"+products[i].image+"'>";
+              $(".products").append(tit);
+              $(".products").append(image);
+          }
+        }
+      });
+
+      App.controller('page2', function (page) {
+        // put stuff here
+      });
+
+      try {
+        App.restore();
+      } catch (err) {
+        App.load('home');
+      }
+    </script>
+  </body>
+</html>

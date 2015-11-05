@@ -1,0 +1,9 @@
+env/
+tmp/
+db_repository/
+migrations/
+app.db
+*.pyc
+app/static/.webassets-cache/*
+app/static/uploads/
+	!app/static/uploads/placeholder-video.png

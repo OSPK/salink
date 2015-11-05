@@ -142,7 +142,7 @@
 				    $( "#search, #newimgtitle, #newvidtitle, #newaudtitle" ).autocomplete({
 				      source: function( request, response ) {
 				        $.ajax({
-				          url: "/pf/autocomplete",
+				          url: "/listing/autocomplete",
 				          dataType: "json",
 				          data: {
 				            q: request.term

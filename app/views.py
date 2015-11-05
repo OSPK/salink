@@ -59,16 +59,16 @@ def load_user(id):
 class AddProduct(Form):
     title = StringField('Name', validators=[DataRequired("Title is required"), Length(message="Title must be 1 to 70 characters long", min=1, max=70)])
     category = SelectField('Category', choices=CATEGORIES, validators=[DataRequired("Category is required")])
-    address = StringField('address', validators=[Length(message="address cannot be longer than 500 characters", min=0, max=500)], widget=TextArea())
-    phone = StringField('Name', validators=[DataRequired("Phone Numeber is required"), Length(message="Phone Number must be 5 to 70 characters long", min=5, max=70)])
+    address = StringField('Address', validators=[Length(message="address cannot be longer than 500 characters", min=0, max=500)], widget=TextArea())
+    phone = StringField('Phone Number', validators=[DataRequired("Phone Numeber is required"), Length(message="Phone Number must be 5 to 70 characters long", min=5, max=70)])
     image = FileField('Image', validators=[FileRequired(), FileAllowed(['jpg', 'png', 'jpeg', 'gif'], 'Images only!')])
 
 
 class AddProductVid(Form):
     title = StringField('Title', validators=[DataRequired("Title is required"), Length(message="Title must be 1 to 70 characters long", min=1, max=70)])
     category = SelectField('Category', choices=CATEGORIES, validators=[DataRequired("Category is required")])
-    address = StringField('address', validators=[Length(message="address cannot be longer than 500 characters", min=0, max=500)], widget=TextArea())
-    phone = StringField('Name', validators=[DataRequired("Phone Numeber is required"), Length(message="Phone Number must be 5 to 70 characters long", min=5, max=70)])
+    address = StringField('Address', validators=[Length(message="address cannot be longer than 500 characters", min=0, max=500)], widget=TextArea())
+    phone = StringField('Phone Number', validators=[DataRequired("Phone Numeber is required"), Length(message="Phone Number must be 5 to 70 characters long", min=5, max=70)])
     video = StringField('URL', validators=[DataRequired("URL is required"), Length(min=5)])
 
 

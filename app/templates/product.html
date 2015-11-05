@@ -31,7 +31,7 @@
 				<p class="description">{% if product.description %}{{ product.description }} {% endif %}</p>
 				<div class="product_photo">
 					{% if product.video is not none %}
-					<iframe style="width:100%;min-height:410px;overflow:hidden;" src="{{product.video|replace("http:", "https:")|replace("autoPlay=1", "autoPlay=0")}}" frameborder="0" scrolling="no" allowfullscreen></iframe>
+					<iframe style="width:100%;min-height:410px;overflow:hidden;" src="{{product.video|replace("http:", "https:")|replace("autoPlay=1", "autoPlay=0")|replace("/v/", "/embed/")}}" frameborder="0" scrolling="no" allowfullscreen></iframe>
 					{% else %}
 					<img class="img-responsive" itemprop="image" src="{{ product.image|thumbnail('800x600', quality=100)|replace("_800x600_100.gif", ".gif") }}" alt="">
 					{% endif %}

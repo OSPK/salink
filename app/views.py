@@ -321,11 +321,12 @@ def addproduct():
     if imgform.validate_on_submit() and request.form.get('formtype') == 'image' and current_user.is_authenticated():
         title = imgform.title.data
         address = imgform.address.data
+        phone = imgform.phone.data
         category = imgform.category.data
         imagename = unicode(random.randint(9000, 10000)) + '-southasianlink-' + secure_filename(imgform.image.data.filename)
         imgform.image.data.save('app/static/uploads/' + imagename)                                 # save this
         pub_date = datetime.datetime.now()
-        product = Product(title=title, pub_date=pub_date, category=category, owner_id=current_user.id, image=imagename, address=address, passes=0, fails=0)
+        product = Product(title=title, pub_date=pub_date, category=category, owner_id=current_user.id, image=imagename, address=address, phone=phone, passes=0, fails=0)
 
         db.session.add(product)
         db.session.commit()
@@ -340,6 +341,7 @@ def addproduct():
     if vidform.validate_on_submit() and request.form.get('formtype') == 'video' and current_user.is_authenticated():
         title = vidform.title.data
         address = vidform.address.data
+        phone = imgform.phone.data
         category = vidform.category.data
         video_url = vidform.video.data
         if not video_url.startswith('http://'):
@@ -415,7 +417,7 @@ def addproduct():
             else:
                 imagename = "placeholder-video.png"
 
-        product = Product(title=title, pub_date=pub_date, owner_id=current_user.id, category=category, video=vid, image=imagename, address=address, passes=0, fails=0)
+        product = Product(title=title, pub_date=pub_date, owner_id=current_user.id, category=category, video=vid, image=imagename, address=address, phone=phone, passes=0, fails=0)
 
         db.session.add(product)
         db.session.commit()

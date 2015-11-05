@@ -13,8 +13,11 @@
                 {% if product.video is none %}<i class="fa fa-picture-o fa-4 type-button" data-toggle='tooltip' data-placement="top" title="Image"></i>{% endif %} Category: <a href="{{ url_for('category', category=product.category) }}">{{ product.category|truncate(20, True) }}</a>
                 </span>
             </div>
+            <div class="phone">
+                Phone: {{ product.phone|truncate(10, True) }}
+            </div>
             <div class="description">
-                {{ product.address|truncate(90, True) }}
+                Address: {{ product.address|truncate(90, True) }}
             </div>
         </div><!--product-container-->
         <div class="small product-meta hidden-xs clearfix">

@@ -11,11 +11,10 @@
 			<ul class="nav nav-tabs" role="tablist">
 				<li role="presentation" class="active image-tab"><a href="#image" aria-controls="image" role="tab" data-toggle="tab"><i class="fa fa-picture-o"></i> Image</a></li>
 				<li role="presentation" class="video-tab"><a href="#video" aria-controls="video" role="tab" data-toggle="tab"><i class="fa fa-video-camera"></i> Video</a></li>
-				<li role="presentation" class="audio-tab"><a href="#audio" aria-controls="audio" role="tab" data-toggle="tab"><i class="fa fa-music"></i> Audio</a></li>
 			</ul>
 			<div class="tab-content">
 				<div role="tabpanel" class="tab-pane fade in active" id="image">
-					<h2>Add image post</h2>
+					<h2>Add Listing (Image)</h2>
 					<form id="imgform" method="POST" action="{{ url_for('addproduct') }}" enctype="multipart/form-data">
 					    {{ imgform.hidden_tag() }}
 					    <div class="form-group">
@@ -41,7 +40,7 @@
 				</div>
 
 				<div role="tabpanel" class="tab-pane fade" id="video">
-					<h2>Add video post</h2>
+					<h2>Add Listing (Video)</h2>
 					<form method="POST" action="{{ url_for('addproduct') }}">
 					    {{ vidform.hidden_tag() }}
 					    <div class="form-group">
@@ -63,33 +62,9 @@
 					    <button class="btn btn-primary btn-block" type="submit">Submit</button>
 					</form>
 				</div>
-
-				<div role="tabpanel" class="tab-pane fade" id="audio">
-					<h2>Add Audio post</h2>
-					<form method="POST" action="{{ url_for('addproduct') }}">
-					    {{ vidform.hidden_tag() }}
-					    <div class="form-group">
-					    	{{ vidform.title.label }} {{ vidform.title(size=20, id="newaudtitle", class_="form-control", maxlength="70") }}
-					    </div>
-					    <div class="form-group">
-					    	{{ vidform.category.label }}
-					    	{{ vidform.category(class_="form-control") }}
-					    </div>
-					    <div class="form-group">
-					    	{{ vidform.description.label }}
-					    	{{ vidform.description(rows="2", class_="form-control", maxlength="500", placeholder="Description", autocomplete="off") }}
-					    </div>
-					    <div class="form-group">
-					    	<label for="video">Audio URL</label> {{ vidform.video(size=20, class_="form-control") }}
-					    	<small>Enter a SoundCloud Audio URL<br></small>
-					    </div>
-					    <input type="hidden" name="formtype" value="video" hidden>
-					    <button class="btn btn-primary btn-block" type="submit">Submit</button>
-					</form>
-				</div>
 			</div>
 			{% else %}
-				<p>You need to be logged in to add products</p>
+				<p>You need to be logged in to add listing</p>
 			{% endif %}
 		</div>
 		<div class="col-md-6">

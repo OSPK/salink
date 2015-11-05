@@ -32,7 +32,7 @@
 {% block content %}
     <section class="home products" itemtype="http://schema.org/ItemList">
         <div class="container">
-            <h2 class="text-center">Trending Right Now</h2><hr>
+            <h2 class="text-center">Latest Listings</h2><hr>
             <div class="row">
                 {% for product in products.items %}
                     {% include 'product_boxes.html' %}
@@ -41,18 +41,6 @@
         </div>
     </section>
     <br>
-    <div class="row no-gutter">
-        <div class="col-md-6 col-sm-6 col-xs-6">
-            <a href="{{ url_for('signup') }}">
-                <button class="pull-right vote pass">Sign Up</button>
-            </a>
-        </div>
-        <div class="col-md-6 col-sm-6 col-xs-6">
-            <a href="{{ url_for('login') }}">
-                <button class="pull-left vote fail">Log In</button>
-            </a>
-        </div>
-    </div>
 {% endblock %}
 
 {% block futurefooter %}

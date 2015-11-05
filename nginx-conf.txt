@@ -1,0 +1,48 @@
+server {
+    listen 80;
+    server_name passorfail.pk;
+
+        open_file_cache          max=2000 inactive=20s;
+        open_file_cache_valid    60s;
+        open_file_cache_min_uses 5;
+    location / {
+        include uwsgi_params;
+        uwsgi_pass unix:/home/waqas/pf/pf.sock;
+        uwsgi_read_timeout 800;
+        proxy_redirect     off;
+        proxy_set_header   Host $host;
+        proxy_set_header   X-Real-IP $remote_addr;
+        proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Host $server_name;
+    }
+
+        error_page 413 /413.html;
+        location = /413.html {
+                root /home/waqas/pf;
+                internal;
+        }
+       # Settings to by-pass for static files
+        location ^~ /static/  {
+                include  /etc/nginx/mime.types;
+                # Example:
+                # root /full/path/to/application/static/file/dir;
+                root /home/waqas/pf/app/;
+                access_log        off;
+                log_not_found     off;
+                expires 365d;
+        }
+
+
+location ~* \.(gif|png|jpe?g)$ {
+  # prevent hotlink
+  valid_referers none blocked ~.google. ~.bing. ~.yahoo. server_names ~($host);
+  if ($invalid_referer) {
+    rewrite (.*) /static/images/hotlink-denied.jpg redirect;
+    # drop the 'redirect' flag for redirect without URL change (internal rewrite)
+  }
+}
+
+# stop hotlink loop
+location = /static/images/hotlink-denied.jpg { }
+
+}

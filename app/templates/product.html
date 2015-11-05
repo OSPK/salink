@@ -2,7 +2,7 @@
 
 {% block title %}{{ product.title }} - Pass or Fail?{% endblock %}
 {% block meta_photo %}{{site_url()}}{{ url_for('static', filename='uploads/' + product.image) }}{% endblock %}
-{% block meta_description %}{% if product.description %}{{ product.description }}{% endif %}{% endblock %}
+{% block meta_description %}{% if product.address %}{{ product.address }}{% endif %}{% endblock %}
 {% block meta_url %}{{site_url()}}{{ request.path }}{% endblock %}
 
 {% block content %}
@@ -28,7 +28,7 @@
 
 				<h1>{{ product.title }}</h1>
 				<span class="small product_meta">Posted by <strong><a href="{{ url_for('profile', user=product.user.nickname) }}">{{ product.user.nickname }}</a></strong>, {{ ago_format(product.pub_date) }} in <strong><a href="{{ url_for('category', category=product.category) }}">{{ product.category|truncate(40, True) }}</a></strong></span>
-				<p class="description">{% if product.description %}{{ product.description }} {% endif %}</p>
+				<p class="address">{% if product.address %}{{ product.address }} {% endif %}</p>
 				<div class="product_photo">
 					{% if product.video is not none %}
 					<iframe style="width:100%;min-height:410px;overflow:hidden;" src="{{product.video|replace("http:", "https:")|replace("autoPlay=1", "autoPlay=0")|replace("/v/", "/embed/")}}" frameborder="0" scrolling="no" allowfullscreen></iframe>

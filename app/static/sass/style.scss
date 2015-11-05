@@ -751,7 +751,7 @@ button.vote {
             line-height: 0px;
         }
     }
-    .description {
+    .address {
       padding: 10px;
       background: #E2E2E2;
       margin-top: 5px;
@@ -788,7 +788,7 @@ section {
         &:hover {
             box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.2);
         }
-        .description {
+        .address {
           padding: 0px 8px 0px 8px;
           color: darken($light-text, 10%);
           margin-top: 0px;

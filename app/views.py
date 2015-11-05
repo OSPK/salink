@@ -59,14 +59,16 @@ def load_user(id):
 class AddProduct(Form):
     title = StringField('Name', validators=[DataRequired("Title is required"), Length(message="Title must be 1 to 70 characters long", min=1, max=70)])
     category = SelectField('Category', choices=CATEGORIES, validators=[DataRequired("Category is required")])
-    description = StringField('Description', validators=[Length(message="Description cannot be longer than 500 characters", min=0, max=500)], widget=TextArea())
+    address = StringField('address', validators=[Length(message="address cannot be longer than 500 characters", min=0, max=500)], widget=TextArea())
+    phone = StringField('Name', validators=[DataRequired("Phone Numeber is required"), Length(message="Phone Number must be 5 to 70 characters long", min=5, max=70)])
     image = FileField('Image', validators=[FileRequired(), FileAllowed(['jpg', 'png', 'jpeg', 'gif'], 'Images only!')])
 
 
 class AddProductVid(Form):
     title = StringField('Title', validators=[DataRequired("Title is required"), Length(message="Title must be 1 to 70 characters long", min=1, max=70)])
     category = SelectField('Category', choices=CATEGORIES, validators=[DataRequired("Category is required")])
-    description = StringField('Description', validators=[Length(message="Description cannot be longer than 500 characters", min=0, max=500)], widget=TextArea())
+    address = StringField('address', validators=[Length(message="address cannot be longer than 500 characters", min=0, max=500)], widget=TextArea())
+    phone = StringField('Name', validators=[DataRequired("Phone Numeber is required"), Length(message="Phone Number must be 5 to 70 characters long", min=5, max=70)])
     video = StringField('URL', validators=[DataRequired("URL is required"), Length(min=5)])
 
 
@@ -318,12 +320,12 @@ def addproduct():
 
     if imgform.validate_on_submit() and request.form.get('formtype') == 'image' and current_user.is_authenticated():
         title = imgform.title.data
-        description = imgform.description.data
+        address = imgform.address.data
         category = imgform.category.data
         imagename = unicode(random.randint(9000, 10000)) + '-southasianlink-' + secure_filename(imgform.image.data.filename)
         imgform.image.data.save('app/static/uploads/' + imagename)                                 # save this
         pub_date = datetime.datetime.now()
-        product = Product(title=title, pub_date=pub_date, category=category, owner_id=current_user.id, image=imagename, description=description, passes=0, fails=0)
+        product = Product(title=title, pub_date=pub_date, category=category, owner_id=current_user.id, image=imagename, address=address, passes=0, fails=0)
 
         db.session.add(product)
         db.session.commit()
@@ -337,7 +339,7 @@ def addproduct():
 
     if vidform.validate_on_submit() and request.form.get('formtype') == 'video' and current_user.is_authenticated():
         title = vidform.title.data
-        description = vidform.description.data
+        address = vidform.address.data
         category = vidform.category.data
         video_url = vidform.video.data
         if not video_url.startswith('http://'):
@@ -413,7 +415,7 @@ def addproduct():
             else:
                 imagename = "placeholder-video.png"
 
-        product = Product(title=title, pub_date=pub_date, owner_id=current_user.id, category=category, video=vid, image=imagename, description=description, passes=0, fails=0)
+        product = Product(title=title, pub_date=pub_date, owner_id=current_user.id, category=category, video=vid, image=imagename, address=address, passes=0, fails=0)
 
         db.session.add(product)
         db.session.commit()
@@ -683,7 +685,7 @@ def product_api(id):
     product = Product.query.get_or_404(id)
     p = {"id": product.id, "title": product.title, "category": product.category, "passes": product.passes, "fails": product.fails,
          "review_count": product.review_count, "pub_date": product.pub_date, "added_by": product.owner_id, "image": "static/uploads/" + product.image,
-         "video": product.video, "views": product.views, "description": product.description}
+         "video": product.video, "views": product.views, "address": product.address}
     r = [{"review": review.review_text,
           "author_id": review.user.id,
           "author_username": review.user.nickname,

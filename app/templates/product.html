@@ -44,8 +44,6 @@
 		            <i class="fa fa-comments"></i> <span id="reviewcount">{% if product.review_count %}{{ product.review_count }}{% else %}0{%endif%}</span> reviews | 
 		            <i class="fa fa-clock-o"></i> {{ago_format(product.pub_date)}}
 		        </div>
-				<a href="#review_form" class="writerev"><button class="btn btn-block btn-primary">Write Review</button></a>
-				{% if not current_user.is_authenticated() %}<p class="h4 text-center"><a href="{{ url_for('signup') }}">Sign up</a> or <a href="{{ url_for('login') }}">Log in</a> to participate</p>{% endif %}
 			</div><!--product-->
 			<div class="pull-right clearfix"><br>
 				<button class="btn btn btn-default" id="reload"><i class="fa fa-refresh"></i></button>

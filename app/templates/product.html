@@ -52,7 +52,7 @@
 			<div id="reviews" class="reviews">
 				<h2>Reviews</h2>
 				{% if review_exists == False %}
-						<h4 class="noreviews">No reviews for this have been added yet, you can be the Fire Starter!</h4>
+						<h4 class="noreviews">No reviews for this have been added yet, you can be the first!</h4>
 				{% endif %}
 				{% if not current_user.is_authenticated() %}<br><p class="h4 text-center"><a href="{{ url_for('signup') }}">Sign up</a> or <a href="{{ url_for('login') }}">Log in</a> to review</p><br>{% endif %}
 				{% for review in reviews|sort(attribute='pub_date') %}

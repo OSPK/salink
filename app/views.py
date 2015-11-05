@@ -151,7 +151,7 @@ def top_categories():
     return set(c)
 
 def site_url():
-    return 'http://passorfail.pk'
+    return 'http://southasianlink.ca/'
 
 app.jinja_env.globals.update(ago_format=ago_format, top_categories=top_categories, site_url=site_url)
 
@@ -320,7 +320,7 @@ def addproduct():
         title = imgform.title.data
         description = imgform.description.data
         category = imgform.category.data
-        imagename = unicode(random.randint(9000, 10000)) + '-passorfail-' + secure_filename(imgform.image.data.filename)
+        imagename = unicode(random.randint(9000, 10000)) + '-southasianlink-' + secure_filename(imgform.image.data.filename)
         imgform.image.data.save('app/static/uploads/' + imagename)                                 # save this
         pub_date = datetime.datetime.now()
         product = Product(title=title, pub_date=pub_date, category=category, owner_id=current_user.id, image=imagename, description=description, passes=0, fails=0)
@@ -363,7 +363,7 @@ def addproduct():
             # image = "http://img.playit.pk/vi/{0}/hqdefault.jpg".format(vid_id)
             if video.get('image'):
                 image = video.image
-                imagename = unicode(random.randint(9000, 10000)) + '-passorfail-' + secure_filename(title) + ".jpg"
+                imagename = unicode(random.randint(9000, 10000)) + '-southasianlink-' + secure_filename(title) + ".jpg"
                 with open('app/static/uploads/' + imagename, 'w') as f:
                     req = urllib2.Request(image, headers={'User-Agent': "Mozilla"})
                     f.write(urllib2.urlopen(req, timeout=15).read())
@@ -375,7 +375,7 @@ def addproduct():
             vid = "http://tune.pk/player/embed_player.php?vid={0}&autoplay=no".format(vid_id)
             if video.get('image'):
                 image = video.get('image')
-                imagename = unicode(random.randint(9000, 10000)) + '-passorfail-' + secure_filename(video.get('title')) + ".jpg"
+                imagename = unicode(random.randint(9000, 10000)) + '-southasianlink-' + secure_filename(video.get('title')) + ".jpg"
                 with open('app/static/uploads/' + imagename, 'w') as f:
                     f.write(urllib2.urlopen(image, timeout=15).read())
             else:
@@ -385,7 +385,7 @@ def addproduct():
             vid = video.get('player')
             if video.get('image'):
                 image = video.get('image:src').replace("https://", "http://")
-                imagename = unicode(random.randint(9000, 10000)) + '-passorfail-' + secure_filename(video.get('title')) + ".jpg"
+                imagename = unicode(random.randint(9000, 10000)) + '-southasianlink-' + secure_filename(video.get('title')) + ".jpg"
                 with open('app/static/uploads/' + imagename, 'w') as f:
                     req = urllib2.Request(image, headers={'User-Agent': "Mozilla"})
                     f.write(urllib2.urlopen(req, timeout=15).read())
@@ -407,7 +407,7 @@ def addproduct():
 
             if video.get('image'):
                 image = video.get('image')
-                imagename = unicode(random.randint(9000, 10000)) + '-passorfail-' + secure_filename(video.get('title')) + ".jpg"
+                imagename = unicode(random.randint(9000, 10000)) + '-southasianlink-' + secure_filename(video.get('title')) + ".jpg"
                 with open('app/static/uploads/' + imagename, 'w') as f:
                     f.write(urllib2.urlopen(image, timeout=15).read())
             else:

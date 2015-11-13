@@ -403,7 +403,7 @@ div#infscr-loading {
     }
     .navbar-nav>.active>a, .navbar-nav>.open>a {
       color: white!important;
-      background-color: darken($navbar2,40%)!important;
+      background-color: darken($navbar2,20%)!important;
     }
     .navbar-nav>li>a {
       color: #434343!important;
@@ -420,7 +420,7 @@ div#infscr-loading {
 }
 
 .navbar-nav>li>.dropdown-menu {
-  background-color: darken($navbar2,40%)!important;
+  background-color: darken($navbar2,20%)!important;
   li a {
     &:hover {
       color:#333;

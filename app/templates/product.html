@@ -41,16 +41,18 @@ google.maps.event.addDomListener(window, 'load', initialize);
 			<div class="product" itemscope itemtype="http://schema.org/Product">
 				{% if current_user.is_authenticated() and product.owner_id == current_user.id %}
 				<div class="owner_menu">
-					<form id="del_product" action="{{ url_for('delete_product', id=product.id) }}" method="post">
-						<div class="btn-group">
-						  <button type="button" class="btn btn-xs btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-						    <i class="fa fa-chevron-down"></i></span>
-						  </button>
-						  <ul class="dropdown-menu pull-right">
-						    <li><button type="submit" class="pdelbutton"><i class="fa fa-trash"></i> Delete</button></li>
-						  </ul>
-						</div>
-					</form>
+					<div class="btn-group">
+					  <button type="button" class="btn btn-xs btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					    <i class="fa fa-chevron-down"></i></span>
+					  </button>
+					  <ul class="dropdown-menu pull-right">
+					  <form id="del_product" action="{{ url_for('delete_product', id=product.id) }}" method="post">
+					    <li><button type="submit" class="pdelbutton"><i class="fa fa-trash"></i> Delete</button></li>
+					  </form>
+					    <li role="separator" class="divider"></li>
+					    <li><button class="editbutton"><i class="fa fa-pencil-square-o"></i> Edit</button></li>
+					  </ul>
+					</div>
 				</div>
 				{% endif %}
 

@@ -6,6 +6,9 @@
                     {% if product.image is not none %}
                     <img src="{{ product.image|thumbnail('220x100', crop='fit', quality=100) }}" class="img-responsive" alt="" itemprop="image">
                     {% endif %}
+                    {% if product.image is none %}
+                    <img src="{{ url_for('static', filename='img/placeholder.jpg') }}" class="img-responsive" alt="" itemprop="image">
+                    {% endif %}
                 </a>
                 <span class="pull-right small category">
                 {% if product.video is not none %}<i class="fa fa-youtube-play fa-4 type-button" data-toggle='tooltip' data-placement="top" title="Video"></i>{% endif %}

@@ -636,7 +636,7 @@ button.vote {
 
   &.pass {
     border: 0px solid rgba(black, 0.1);
-    @include vendor-prefix(border-radius, 50px 0px 0px 50px);
+    @include vendor-prefix(border-radius, 10px 0px 0px 10px);
     background-color: rgba(#000, 70%);
     color: rgba(white, 90%);
     &:hover {
@@ -654,7 +654,7 @@ button.vote {
   }
   &.fail {
     border: 0px solid rgba(black, 0.1);
-    @include vendor-prefix(border-radius, 0px 50px 50px 0px);
+    @include vendor-prefix(border-radius, 0px 10px 10px 0px);
     background-color: rgba(#fff, 70%);
     color: rgba(black, 90%);
     &:hover {

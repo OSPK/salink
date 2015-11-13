@@ -7,7 +7,7 @@ from app import app, login_manager, db, limiter
 from flask.ext.assets import Environment, Bundle
 from flask.ext.login import login_user, logout_user, current_user
 from pf_oauth import OAuthSignIn
-from models import User, Product, Review, Vote
+from models import User, Product, Review
 # WTF FORMS
 from flask_wtf import Form
 from wtforms import StringField, PasswordField, HiddenField, SubmitField, SelectField
@@ -57,19 +57,19 @@ def load_user(id):
 
 # Forms
 class AddProduct(Form):
-    title = StringField('Name', validators=[DataRequired("Title is required"), Length(message="Title must be 1 to 70 characters long", min=1, max=70)])
+    title = StringField('Business Name', validators=[DataRequired("Title is required"), Length(message="Title must be 1 to 70 characters long", min=1, max=70)])
     category = SelectField('Category', choices=CATEGORIES, validators=[DataRequired("Category is required")])
     address = StringField('Address', validators=[Length(message="address cannot be longer than 500 characters", min=0, max=500)], widget=TextArea())
     phone = StringField('Phone Number', validators=[DataRequired("Phone Numeber is required"), Length(message="Phone Number must be 5 to 70 characters long", min=5, max=70)])
-    image = FileField('Image', validators=[FileRequired(), FileAllowed(['jpg', 'png', 'jpeg', 'gif'], 'Images only!')])
-
-
-class AddProductVid(Form):
-    title = StringField('Title', validators=[DataRequired("Title is required"), Length(message="Title must be 1 to 70 characters long", min=1, max=70)])
-    category = SelectField('Category', choices=CATEGORIES, validators=[DataRequired("Category is required")])
-    address = StringField('Address', validators=[Length(message="address cannot be longer than 500 characters", min=0, max=500)], widget=TextArea())
-    phone = StringField('Phone Number', validators=[DataRequired("Phone Numeber is required"), Length(message="Phone Number must be 5 to 70 characters long", min=5, max=70)])
-    video = StringField('URL', validators=[DataRequired("URL is required"), Length(min=5)])
+    image = FileField('Image', validators=[FileAllowed(['jpg', 'png', 'jpeg', 'gif'], 'Images only!')])
+    video = StringField('Video URL')
+    contact_name = StringField('Contact person name')
+    services = StringField('Services')
+    cell_number = StringField('Cell Number')
+    fax_number = StringField('Fax Number')
+    website = StringField('Website')
+    email = StringField('Email')
+    location = StringField('Location')
 
 
 class AddReview(Form):
@@ -254,14 +254,8 @@ def category(page=1, category=None, view='latest'):
         products = Product.query.filter(Product.pub_date > this_week, Product.category == category).order_by(Product.views.desc()).paginate(page, POSTS_PER_PAGE, False)
     if view == 'most-viewed':
         products = Product.query.filter(Product.category == category).order_by(Product.views.desc()).paginate(page, POSTS_PER_PAGE, False)
-    if view == 'passing':
-        products = Product.query.filter(Product.passes > Product.fails, Product.category == category).order_by(Product.passes.desc()).paginate(page, POSTS_PER_PAGE, False)
-    if view == 'failing':
-        products = Product.query.filter(Product.fails > Product.passes, Product.category == category).order_by(Product.fails.desc()).paginate(page, POSTS_PER_PAGE, False)
     if view == 'most-reviewed':
         products = Product.query.filter(Product.category == category).order_by(Product.review_count.desc()).paginate(page, POSTS_PER_PAGE, False)
-    if view == 'tied':
-        products = Product.query.filter((Product.fails == Product.passes) >= 1, Product.category == category).order_by(Product.fails.desc()).paginate(page, POSTS_PER_PAGE, False)
 
     return render_template('category.html', products=products, category=category, view=view)
 
@@ -309,24 +303,109 @@ def autocomplete():
 @app.route('/listing/add', methods=['GET', 'POST'])
 @limiter.limit("1/second")
 def addproduct():
-    imgform = AddProduct()
-    vidform = AddProductVid()
+    form = AddProduct()
 
     if not current_user.is_authenticated():
         return redirect(url_for('login'))
 
     if request.method == 'GET':
-        return render_template('new.html', imgform=imgform, vidform=vidform)
+        return render_template('new.html', form=form)
 
-    if imgform.validate_on_submit() and request.form.get('formtype') == 'image' and current_user.is_authenticated():
-        title = imgform.title.data
-        address = imgform.address.data
-        phone = imgform.phone.data
-        category = imgform.category.data
-        imagename = unicode(random.randint(9000, 10000)) + '-southasianlink-' + secure_filename(imgform.image.data.filename)
-        imgform.image.data.save('app/static/uploads/' + imagename)                                 # save this
+    if form.validate_on_submit() and current_user.is_authenticated():
+        title = form.title.data
+        address = form.address.data
+        phone = form.phone.data
+        category = form.category.data
         pub_date = datetime.datetime.now()
-        product = Product(title=title, pub_date=pub_date, category=category, owner_id=current_user.id, image=imagename, address=address, phone=phone, passes=0, fails=0)
+        contact_name = form.contact_name.data
+        services = form.services.data
+        cell_number = form.cell_number.data
+        fax_number = form.fax_number.data
+        website = form.website.data
+        email = form.email.data
+        location = form.location.data
+        imagename = None
+        vid = None
+        if form.image.data:
+            imagename = unicode(random.randint(9000, 10000)) + '-southasianlink-' + secure_filename(form.image.data.filename)
+            form.image.data.save('app/static/uploads/' + imagename)                                 # save this
+
+        if form.video.data:
+            video_url = form.video.data
+
+            if not video_url.startswith('http://'):
+                if not video_url.startswith('https://'):
+                    video_url = "http://" + video_url
+            sites_allowed = ['dailymotion', 'youtube', 'tune.pk', 'playit.pk', 'vine.co', 'vimeo.com', 'soundcloud.com']
+
+            # check if from sites_allowed
+            if not any(site in video_url for site in sites_allowed):
+                flash("Not a valid video URL", 'danger')
+                return render_template('new.html', form=form)
+
+            # proceed if not
+            try:
+                video = opengraph.OpenGraph(url=video_url)
+            except:
+                video = None
+
+            if "playit.pk" in video_url:
+                vid_id = video.url.split('?v=')[1]
+                vid = "https://playit.pk/embed-t?v=" + vid_id
+                # image = "http://img.playit.pk/vi/{0}/hqdefault.jpg".format(vid_id)
+                if video.get('image'):
+                    image = video.image
+                    imagename = unicode(random.randint(9000, 10000)) + '-southasianlink-' + secure_filename(title) + ".jpg"
+                    with open('app/static/uploads/' + imagename, 'w') as f:
+                        req = urllib2.Request(image, headers={'User-Agent': "Mozilla"})
+                        f.write(urllib2.urlopen(req, timeout=15).read())
+                else:
+                    imagename = "placeholder-video.png"
+
+            elif "tune.pk" in video_url:
+                vid_id = video.video.split('?videoid=')[1]
+                vid = "http://tune.pk/player/embed_player.php?vid={0}&autoplay=no".format(vid_id)
+                if video.get('image'):
+                    image = video.get('image')
+                    imagename = unicode(random.randint(9000, 10000)) + '-southasianlink-' + secure_filename(video.get('title')) + ".jpg"
+                    with open('app/static/uploads/' + imagename, 'w') as f:
+                        f.write(urllib2.urlopen(image, timeout=15).read())
+                else:
+                    imagename = "placeholder-video.png"
+
+            elif "soundcloud.com" in video_url:
+                vid = video.get('player')
+                if video.get('image'):
+                    image = video.get('image:src').replace("https://", "http://")
+                    imagename = unicode(random.randint(9000, 10000)) + '-southasianlink-' + secure_filename(video.get('title')) + ".jpg"
+                    with open('app/static/uploads/' + imagename, 'w') as f:
+                        req = urllib2.Request(image, headers={'User-Agent': "Mozilla"})
+                        f.write(urllib2.urlopen(req, timeout=15).read())
+                else:
+                    imagename = "placeholder-video.png"
+
+            else:
+                if video is None or not video.is_valid():
+                    flash("Not a valid video URL", 'danger')
+                    return render_template('new.html', form=form)
+
+                if video.get('video'):
+                    vid = video.get('video')
+                if video.get('video:url'):
+                    vid = video.get('video:url')
+                if "vimeo.com/" in video_url:
+                    vid_id = video.get("video:url").split('clip_id=')[1].split('&')[0]
+                    vid = "https://player.vimeo.com/video/{0}".format(vid_id)
+
+                if video.get('image'):
+                    image = video.get('image')
+                    imagename = unicode(random.randint(9000, 10000)) + '-southasianlink-' + secure_filename(video.get('title')) + ".jpg"
+                    with open('app/static/uploads/' + imagename, 'w') as f:
+                        f.write(urllib2.urlopen(image, timeout=15).read())
+                else:
+                    imagename = "placeholder-video.png"
+
+        product = Product(title=title, pub_date=pub_date, contact_name=contact_name, services=services, cell_number=cell_number, fax_number=fax_number, website=website, email=email, location=location, category=category, owner_id=current_user.id, image=imagename, video=vid, address=address, phone=phone)
 
         db.session.add(product)
         db.session.commit()
@@ -334,99 +413,10 @@ def addproduct():
         flash('Added successfully', 'success')
 
         return redirect(url_for('product', id=product.id))
-    elif request.form.get('formtype') == 'image' and current_user.is_authenticated():
-        flash_errors(imgform, 'danger')
-        return render_template('new.html', imgform=imgform, vidform=vidform)
 
-    if vidform.validate_on_submit() and request.form.get('formtype') == 'video' and current_user.is_authenticated():
-        title = vidform.title.data
-        address = vidform.address.data
-        phone = imgform.phone.data
-        category = vidform.category.data
-        video_url = vidform.video.data
-        if not video_url.startswith('http://'):
-            if not video_url.startswith('https://'):
-                video_url = "http://" + video_url
-        pub_date = datetime.datetime.now()
-        sites_allowed = ['dailymotion', 'youtube', 'tune.pk', 'playit.pk', 'vine.co', 'vimeo.com', 'soundcloud.com']
-
-        # check if from sites_allowed
-        if not any(site in video_url for site in sites_allowed):
-            flash("Not a valid video URL", 'danger')
-            return render_template('new.html', imgform=imgform, vidform=vidform)
-
-        # proceed if not
-        try:
-            video = opengraph.OpenGraph(url=video_url)
-        except:
-            video = None
-
-        if "playit.pk" in video_url:
-            vid_id = video.url.split('?v=')[1]
-            vid = "https://playit.pk/embed-t?v=" + vid_id
-            # image = "http://img.playit.pk/vi/{0}/hqdefault.jpg".format(vid_id)
-            if video.get('image'):
-                image = video.image
-                imagename = unicode(random.randint(9000, 10000)) + '-southasianlink-' + secure_filename(title) + ".jpg"
-                with open('app/static/uploads/' + imagename, 'w') as f:
-                    req = urllib2.Request(image, headers={'User-Agent': "Mozilla"})
-                    f.write(urllib2.urlopen(req, timeout=15).read())
-            else:
-                imagename = "placeholder-video.png"
-
-        elif "tune.pk" in video_url:
-            vid_id = video.video.split('?videoid=')[1]
-            vid = "http://tune.pk/player/embed_player.php?vid={0}&autoplay=no".format(vid_id)
-            if video.get('image'):
-                image = video.get('image')
-                imagename = unicode(random.randint(9000, 10000)) + '-southasianlink-' + secure_filename(video.get('title')) + ".jpg"
-                with open('app/static/uploads/' + imagename, 'w') as f:
-                    f.write(urllib2.urlopen(image, timeout=15).read())
-            else:
-                imagename = "placeholder-video.png"
-
-        elif "soundcloud.com" in video_url:
-            vid = video.get('player')
-            if video.get('image'):
-                image = video.get('image:src').replace("https://", "http://")
-                imagename = unicode(random.randint(9000, 10000)) + '-southasianlink-' + secure_filename(video.get('title')) + ".jpg"
-                with open('app/static/uploads/' + imagename, 'w') as f:
-                    req = urllib2.Request(image, headers={'User-Agent': "Mozilla"})
-                    f.write(urllib2.urlopen(req, timeout=15).read())
-            else:
-                imagename = "placeholder-video.png"
-
-        else:
-            if video is None or not video.is_valid():
-                flash("Not a valid video URL", 'danger')
-                return render_template('new.html', imgform=imgform, vidform=vidform)
-
-            if video.get('video'):
-                vid = video.get('video')
-            if video.get('video:url'):
-                vid = video.get('video:url')
-            if "vimeo.com/" in video_url:
-                vid_id = video.get("video:url").split('clip_id=')[1].split('&')[0]
-                vid = "https://player.vimeo.com/video/{0}".format(vid_id)
-
-            if video.get('image'):
-                image = video.get('image')
-                imagename = unicode(random.randint(9000, 10000)) + '-southasianlink-' + secure_filename(video.get('title')) + ".jpg"
-                with open('app/static/uploads/' + imagename, 'w') as f:
-                    f.write(urllib2.urlopen(image, timeout=15).read())
-            else:
-                imagename = "placeholder-video.png"
-
-        product = Product(title=title, pub_date=pub_date, owner_id=current_user.id, category=category, video=vid, image=imagename, address=address, phone=phone, passes=0, fails=0)
-
-        db.session.add(product)
-        db.session.commit()
-
-        return redirect(url_for('product', id=product.id))
-
-    elif request.form.get('formtype') == 'video' and current_user.is_authenticated():
-        flash_errors(vidform, 'danger')
-        return render_template('new.html', imgform=imgform, vidform=vidform)
+    elif current_user.is_authenticated():
+        flash_errors(form, 'danger')
+        return render_template('new.html', form=form)
 
 
 @app.route('/p/<id>', methods=['GET'])
@@ -438,24 +428,6 @@ def product(id):
     prod_prev = Product.query.options(load_only("id")).filter(Product.id > id).order_by(Product.pub_date.desc()).limit(1).first()
     reviews = product.reviews.all()
     reviewform = AddReview()
-    already_voted = False
-    myvote = None
-    my_vote = None
-    review_exists = False
-
-    for review in reviews:
-        if review.review_text is not None:
-            review_exists = True
-
-    if current_user.is_authenticated():
-        myvote = Vote.query.options(load_only("id")).filter(Vote.author_id == current_user.id, Vote.product_id == id).order_by(Vote.pub_date.desc()).first()
-
-        if myvote:
-            already_voted = True
-            if myvote.vote is True:
-                my_vote = "pass"
-            if myvote.vote is False:
-                my_vote = "fail"
 
     if request.method == 'GET':
         if product.views is not None:
@@ -465,80 +437,7 @@ def product(id):
             product.views = 1
             db.session.commit()
 
-    return render_template('product.html', review_exists=review_exists, my_vote=my_vote, product=product, reviewform=reviewform, reviews=reviews, already_voted=already_voted, prod_next=prod_next, prod_prev=prod_prev, xposts=xposts)
-
-
-@app.route('/p/<id>/vote/', methods=['POST'])
-@limiter.limit("15/minute")
-@limiter.limit("2/second")
-def product_post_vote(id):
-    product = Product.query.options(load_only("id")).get_or_404(id)
-    already_voted = False
-    myvote = None
-    my_vote = None
-
-    if not current_user.is_authenticated():
-        abort(401)
-
-    if current_user.is_authenticated():
-        myvote = Vote.query.options(load_only("vote")).filter(Vote.author_id == current_user.id, Vote.product_id == id).order_by(Vote.pub_date.desc()).first()
-
-        if myvote:
-            already_voted = True
-            if myvote.vote is True:
-                my_vote = "pass"
-            if myvote.vote is False:
-                my_vote = "fail"
-
-    if current_user.is_authenticated() and already_voted is False:
-        product_id = product.id
-        author_id = current_user.id
-        pub_date = datetime.datetime.now()
-        vote = request.form.get('vote')
-
-        if vote == 'pass':
-            voted = Vote(product_id=product_id, author_id=author_id, vote=True, pub_date=pub_date)
-
-        elif vote == 'fail':
-            voted = Vote(product_id=product_id, author_id=author_id, vote=False, pub_date=pub_date)
-        # product.image = request.form['image']
-        if vote is not None:
-            db.session.add(voted)
-            db.session.commit()
-
-            # flash('Updated successfully', 'success')
-            
-            resp = {'points': current_user.points, 'passes': product.passes, 'fails': product.fails}
-
-            return Response(json.dumps(resp), mimetype='application/json')
-            # redirect(url_for('product', id=product_id))
-
-        if vote is None:
-            flash('You forgot to vote', 'danger')
-
-            return redirect(url_for('product', id=product_id))
-
-    if current_user.is_authenticated() and already_voted is True:
-
-        if request.form.get('votechange'):
-            vote = request.form.get('votechange')
-            if vote == "pass" and myvote.vote is False:
-                product.pass_it()
-                product.fails -= 1
-                myvote.vote = not myvote.vote
-            if vote == "fail" and myvote.vote is True:
-                product.fail_it()
-                product.passes -= 1
-                myvote.vote = not myvote.vote
-            myvote.pub_date = datetime.datetime.now()
-
-            db.session.commit()
-            # flash("Vote changed", 'success')
-
-            resp = {'points': current_user.points, 'passes': product.passes, 'fails': product.fails}
-
-            return jsonify(resp)
-            # redirect(url_for('product', id=product_id))
+    return render_template('product.html', product=product, reviewform=reviewform, reviews=reviews, prod_next=prod_next, prod_prev=prod_prev, xposts=xposts)
 
 
 @app.route('/p/<id>/review/', methods=['POST'])
@@ -547,18 +446,9 @@ def product_post_vote(id):
 def product_post_review(id):
     product_id = id
     reviewform = AddReview()
-    already_voted = False
-    myvote = None
-    my_vote = None
 
     if not current_user.is_authenticated():
         abort(401)
-
-    if current_user.is_authenticated():
-        myvote = Vote.query.options(load_only("id")).filter(Vote.author_id == current_user.id, Vote.product_id == id).order_by(Vote.pub_date.desc()).first()
-
-        if myvote:
-            already_voted = True
 
     if current_user.is_authenticated():
         author_id = current_user.id
@@ -569,7 +459,12 @@ def product_post_review(id):
             review = Review(product_id=product_id, author_id=author_id, pub_date=pub_date, review_text=review_text)
             db.session.add(review)
             db.session.commit()
-            resp = {'user': current_user.nickname, 'points': current_user.points, 'review': escape(review_text), 'reviewid': review.id}
+            if review.product.review_count is None:
+                review.product.review_count = 1
+            else:
+                review.product.review_count += 1
+            db.session.commit()
+            resp = {'user': current_user.nickname, 'review': escape(review_text), 'reviewid': review.id}
             return jsonify(resp)
             # return redirect(url_for('product', id=product_id)) #            +'#'+unicode(review.id))
         else:
@@ -615,8 +510,6 @@ def delete_product(id):
     product = Product.query.options(load_only("id")).get_or_404(id)
     title = "'" + product.title + "' deleted"
     if current_user.is_authenticated() and current_user.id == product.owner_id:
-        points = product.passes
-        current_user.points -= (10 + points)
         db.session.delete(product)
         db.session.commit()
         flash(title, "danger")
@@ -628,12 +521,11 @@ def delete_review(id):
     review = Review.query.filter(Review.id == id).first()
     product_id = review.product_id
     if current_user.is_authenticated() and current_user.id == review.author_id:
-        current_user.points -= 2
         review.product.review_count -= 1
         db.session.delete(review)
         db.session.commit()
+        resp = {}
         # flash("Review deleted", "danger")
-        resp = {'points': current_user.points}
         return jsonify(resp)
 
 # ============================ /Deleting Stuff ===============================

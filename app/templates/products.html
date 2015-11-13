@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}{{view|replace("-", " ")|title}} - Pass or Fail{% endblock %}
+{% block title %}{{view|replace("-", " ")|title}} - South Asian Link{% endblock %}
 
 {% block content %}
     {% if results == 1 %}
@@ -28,10 +28,15 @@
                     <a href="{{ url_for('products', view='most-reviewed') }}" class="btn btn-default btn-sm pillmost-reviewed">Most Reviewed</a>
                 </div>
             {% endif %}
-            <div class="row" id="infcontent">
-                {% for product in products.items %}
-                    {% include 'product_boxes.html' %}
-                {% endfor %}
+            <div class="row">
+                <div class="col-md-8" id="infcontent">
+                    {% for product in products.items %}
+                        {% include 'product_boxes.html' %}
+                    {% endfor %}
+                </div>
+                <div class="col-md-4">
+                    sidebar
+                </div>
             </div>
         </div>
     </section><br>

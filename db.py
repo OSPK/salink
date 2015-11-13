@@ -1,6 +1,6 @@
 from app import app
 from app import db
-from app.models import User, Product, Vote, Review
+from app.models import User, Product, Review
 from flask.ext.script import Manager
 from flask.ext.migrate import Migrate, MigrateCommand
 

@@ -403,7 +403,7 @@ div#infscr-loading {
     }
     .navbar-nav>.active>a, .navbar-nav>.open>a {
       color: white!important;
-      background-color: #055F0A!important;
+      background-color: darken($navbar2,40%)!important;
     }
     .navbar-nav>li>a {
       color: #434343!important;
@@ -421,7 +421,13 @@ div#infscr-loading {
 }
 
 .navbar-nav>li>.dropdown-menu {
-  background: $navbar2;
+  background-color: darken($navbar2,40%)!important;
+  li a {
+    &:hover {
+      color:#333;
+    }
+
+  }
 }
 .dropdown-menu>li>a {
   color: #222;

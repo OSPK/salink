@@ -613,6 +613,8 @@ button.vote {
   min-width: 100px;
   max-width: 270px;
   height: 70px;
+  font-size: 1.5em;
+  font-weight: 700;
 
   &.pass {
     border: 0px solid rgba(black, 0.1);

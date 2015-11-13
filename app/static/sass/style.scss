@@ -370,6 +370,9 @@ div#infscr-loading {
   // height:30px;
   // min-height: 30px;
 }
+.navbar-nav .open .dropdown-menu > li > a {
+    color: #fff;
+  }
 
 .navbar-inverse {
     background: #21242d; /* Old browsers */

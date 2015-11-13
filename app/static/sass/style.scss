@@ -213,6 +213,12 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
     font-weight: 700;
 }
 
+#page-content-wrapper {
+  margin-top:20px;
+}
+#searchbutton {
+  cursor: pointer;
+}
 .margin-top {
   margin-top: 20px;
 }
@@ -361,8 +367,8 @@ div#infscr-loading {
 }
 
 .navbar {
-  height:30px;
-  min-height: 30px;
+  // height:30px;
+  // min-height: 30px;
 }
 
 .navbar-inverse {
@@ -373,8 +379,8 @@ div#infscr-loading {
     text-align: center;
     box-shadow: 0px 0px 1px;
     .logo {
-        max-height: 30px;
-        padding: 7px;
+        max-height: 50px;
+        padding: 10px;
     }
     .fa {
       color: #585A74;
@@ -385,8 +391,8 @@ div#infscr-loading {
     .navbar-brand {
       color: #BBCBD8!important;
       text-shadow: 2px 2px 3px #000;
-      padding: 5px 15px;
-      height: 30px;
+      // padding: 5px 15px;
+      // height: 30px;
       font-size: 1em;
         &:hover {
         color:#efefef!important;
@@ -395,8 +401,8 @@ div#infscr-loading {
     .navbar-nav>li>a {
       color: #BBCBD8!important;
       text-shadow: 2px 2px 3px #000;
-      padding-top:5px;
-      padding-bottom: 5px;
+      // padding-top:5px;
+      // padding-bottom: 5px;
       font-size:0.9em;
       &:hover {
         color:#efefef!important;
@@ -566,7 +572,7 @@ div#infscr-loading {
   margin-bottom: 0;
   margin: 0px;
   padding: 0px;
-  top: 30px;
+  top: 50px;
   left: 0px;
   right: 0px;
   height: 0px;

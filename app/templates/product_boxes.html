@@ -4,7 +4,7 @@
             <div class="col-md-4 prod_box">
                 <a href="{{ url_for('product', id=product.id) }}" class="product-image">
                     {% if product.image is not none %}
-                    <img src="{{ product.image|thumbnail('330x200', crop='fit', quality=100) }}" class="img-responsive" alt="" itemprop="image">
+                    <img src="{{ product.image|thumbnail('220x100', crop='fit', quality=100) }}" class="img-responsive" alt="" itemprop="image">
                     {% endif %}
                 </a>
                 <span class="pull-right small category">

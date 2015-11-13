@@ -34,9 +34,12 @@
         <div class="container">
             <h2 class="text-center">Latest Listings</h2><hr>
             <div class="row">
-                {% for product in products.items %}
-                    {% include 'product_boxes.html' %}
-                {% endfor %}
+                <div class="col-md-8">
+                    {% for product in products.items %}
+                        {% include 'product_boxes.html' %}
+                    {% endfor %}
+                </div>
+                <div class="col-md-4"></div>
             </div>
         </div>
     </section>

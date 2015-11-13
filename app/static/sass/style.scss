@@ -923,8 +923,10 @@ section {
   background-color: #FFC06D;
 }
 .related-products {
-    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0);
     word-wrap: break-word;
+    background: transparent;
+    border: 0px;
     .row {
         // display: table;
     }

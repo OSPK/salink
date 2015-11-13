@@ -398,7 +398,7 @@ div#infscr-loading {
       // height: 30px;
       font-size: 1.2em;
         &:hover {
-        color:#efefef!important;
+        font-weight: bold;
         }
     }
     .navbar-nav>.active>a, .navbar-nav>.open>a {
@@ -412,7 +412,7 @@ div#infscr-loading {
       // padding-bottom: 5px;
       font-size:1em;
       &:hover {
-        color:#efefef!important;
+        font-weight: bold;
         .fa {
           color: white;
         }

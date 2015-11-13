@@ -807,7 +807,7 @@ section {
           padding-left:20px;
         }
         .address {
-          padding: 0px 8px 0px 8px;
+          padding: 0px;
           color: darken($light-text, 10%);
           margin-top: 0px;
           font-family: 'Lato', sans-serif;
@@ -818,7 +818,7 @@ section {
           overflow: hidden;
         }
         .phone {
-          padding: 0px 8px 0px 8px;
+          padding: 0px;
           background:transparent;
           margin-top: 2px;
         }
@@ -889,7 +889,7 @@ section {
             font-size: 20px;
             font-weight: bold;
             margin: 0px;
-            margin-top: 10px;
+            margin-top: 0px;
         }
     }
     .category {

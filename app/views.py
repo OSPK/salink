@@ -422,10 +422,10 @@ def addproduct():
 @app.route('/p/<id>', methods=['GET'])
 def product(id):
     product = Product.query.get_or_404(id)
-    xposts = Product.query.options(load_only("id")).filter(Product.id < id).order_by(Product.pub_date.desc()).limit(7).all()
-
-    prod_next = Product.query.options(load_only("id")).filter(Product.id < id).order_by(Product.pub_date.desc()).limit(1).first()  # Product.query.get(next_id)
-    prod_prev = Product.query.options(load_only("id")).filter(Product.id > id).order_by(Product.pub_date.desc()).limit(1).first()
+    category = product.category
+    xposts = Product.query.options(load_only("id")).filter(Product.id < id, Product.category == category).order_by(Product.pub_date.desc()).limit(7).all()
+    prod_next = Product.query.options(load_only("id")).filter(Product.id < id, Product.category == category).order_by(Product.pub_date.desc()).limit(1).first()  # Product.query.get(next_id)
+    prod_prev = Product.query.options(load_only("id")).filter(Product.id > id, Product.category == category).order_by(Product.pub_date.desc()).limit(1).first()
     reviews = product.reviews.all()
     reviewform = AddReview()
 

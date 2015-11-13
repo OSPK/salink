@@ -15,11 +15,15 @@
         <br>
             <section class="products main" itemtype="http://schema.org/ItemList">
                 <div id="infcontent" class="row products-bg"><br>
-                    {% for product in products.items %}
-                                {% include 'product_boxes.html' %}
-                    {% else %}
-                        <h2>You have not added anything</h2>
-                    {% endfor %}
+                    <div class="col-md-8">
+                        {% for product in products.items %}
+                                    {% include 'product_boxes.html' %}
+                        {% else %}
+                            <h2>You have not added anything</h2>
+                        {% endfor %}
+                    </div>
+                    <div class="col-md-4">
+                    </div>
                 </div>
             </section>
         </div>

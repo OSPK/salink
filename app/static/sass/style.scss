@@ -68,8 +68,8 @@ $white-text: #efefef;
 $search-bar-gray: #E1E1E1;
 
 //navbar colors
-$navbar1: #000;
-$navbar2: #000;
+$navbar1: #07DE5D;
+$navbar2: #06954E;
 
 @-webkit-keyframes rotating /* Safari and Chrome */ {
   from {
@@ -383,27 +383,31 @@ div#infscr-loading {
         padding: 10px;
     }
     .fa {
-      color: #585A74;
+      color: #003B95;
     }
     .navbar-header {
         min-width: 180px;
     }
     .navbar-brand {
-      color: #BBCBD8!important;
-      text-shadow: 2px 2px 3px #000;
+      color: #323232!important;
+      // text-shadow: 2px 2px 3px #000;
       // padding: 5px 15px;
       // height: 30px;
-      font-size: 1em;
+      font-size: 1.2em;
         &:hover {
         color:#efefef!important;
         }
     }
+    .navbar-nav>.active>a, .navbar-nav>.open>a {
+      color: white!important;
+      background-color: #055F0A!important;
+    }
     .navbar-nav>li>a {
-      color: #BBCBD8!important;
-      text-shadow: 2px 2px 3px #000;
+      color: #434343!important;
+      // text-shadow: 2px 2px 3px #000;
       // padding-top:5px;
       // padding-bottom: 5px;
-      font-size:0.9em;
+      font-size:1em;
       &:hover {
         color:#efefef!important;
         .fa {
@@ -414,10 +418,10 @@ div#infscr-loading {
 }
 
 .navbar-nav>li>.dropdown-menu {
-  background: #242532;
+  background: $navbar2;
 }
 .dropdown-menu>li>a {
-  color: #B6CBCD;
+  color: #222;
 }
 
 .profile-page {

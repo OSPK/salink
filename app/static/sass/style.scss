@@ -966,7 +966,16 @@ section {
         }
     }
 }
-
+.photos-other {
+  text-align: center;
+  a {
+    background: black;
+    img {
+      height: 100px;
+      width: 100px;
+    }
+  }
+}
 .wordcount {
     span {
         color: $red;

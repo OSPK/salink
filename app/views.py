@@ -41,7 +41,7 @@ assets.register('custom_sass', custom_sass)
 # pagination
 POSTS_PER_PAGE = 9
 
-#all categories
+# all categories
 CATEGORIES = [('Architecture', 'Architecture'), ('Carpet', 'Carpet'), ('Grocery Store', 'Grocery Store'), ('Real Estate - Realtor - Mortgage', 'Real Estate - Realtor - Mortgage'), ('Printing', 'Printing'), ('Auto Mechanic - Buying - Selling', 'Auto Mechanic - Buying - Selling'), ('Woodworking', 'Woodworking'), ('School', 'School'), ('Draperies - Curtains', 'Draperies - Curtains'), ('Newspaper', 'Newspaper'), ('Insurance', 'Insurance'), ('Restaurant - Sweet Shop', 'Restaurant - Sweet Shop'), ('Bank - Money', 'Bank - Money'), ('Remittance', 'Remittance'), ('Glass', 'Glass'), ('Worship Places', 'Worship Places'), ('Accountant', 'Accountant'), ('Traveling Agency', 'Traveling Agency'), ('Construction', 'Construction'), ('Clinic - Pharmacy', 'Clinic - Pharmacy'), ('Boutique - Clothing', 'Boutique - Clothing'), ('Jewelers', 'Jewelers'), ('Painting', 'Painting'), ('Optics - Glasses', 'Optics - Glasses'), ('Electronic', 'Electronic'), ('Furniture', 'Furniture'), ('Moving Companies', 'Moving Companies'), ('Stationary', 'Stationary'), ('Others', 'Others')]
 
 # sudo apt-get install libjpeg-dev
@@ -61,7 +61,10 @@ class AddProduct(Form):
     category = SelectField('Category', choices=CATEGORIES, validators=[DataRequired("Category is required")])
     address = StringField('Address', validators=[Length(message="address cannot be longer than 500 characters", min=0, max=500)], widget=TextArea())
     phone = StringField('Phone Number', validators=[DataRequired("Phone Numeber is required"), Length(message="Phone Number must be 5 to 70 characters long", min=5, max=70)])
-    image = FileField('Image', validators=[FileAllowed(['jpg', 'png', 'jpeg', 'gif'], 'Images only!')])
+    image = FileField('Featued Image', validators=[FileAllowed(['jpg', 'png', 'jpeg', 'gif'], 'Images only!')])
+    image2 = FileField('Image 2', validators=[FileAllowed(['jpg', 'png', 'jpeg', 'gif'], 'Images only!')])
+    image3 = FileField('Image 3', validators=[FileAllowed(['jpg', 'png', 'jpeg', 'gif'], 'Images only!')])
+    image4 = FileField('Image 4', validators=[FileAllowed(['jpg', 'png', 'jpeg', 'gif'], 'Images only!')])
     video = StringField('Video URL')
     contact_name = StringField('Contact person name')
     services = StringField('Services')
@@ -139,6 +142,13 @@ def product_review_count(products):
     return r
 
 
+def is_authorised(user, product):
+    if current_user.is_authenticated() and current_user.id == product.owner_id:
+        return True
+    else:
+        return False
+
+
 def ago_format(date):
     return human(date, precision=1, past_tense='{} ago', future_tense='in {}')
 
@@ -151,6 +161,7 @@ def top_categories():
         cat = [product.category]
         c.extend(cat)
     return set(c)
+
 
 def site_url():
     return 'http://southasianlink.ca/'
@@ -325,10 +336,25 @@ def addproduct():
         email = form.email.data
         location = form.location.data
         imagename = None
+        image2name = None
+        image3name = None
+        image4name = None
         vid = None
         if form.image.data:
             imagename = unicode(random.randint(9000, 10000)) + '-southasianlink-' + secure_filename(form.image.data.filename)
             form.image.data.save('app/static/uploads/' + imagename)                                 # save this
+
+        if form.image2.data:
+            image2name = unicode(random.randint(9000, 10000)) + '-southasianlink-' + secure_filename(form.image2.data.filename)
+            form.image2.data.save('app/static/uploads/' + image2name)                                 # save this
+
+        if form.image3.data:
+            image3name = unicode(random.randint(9000, 10000)) + '-southasianlink-' + secure_filename(form.image3.data.filename)
+            form.image3.data.save('app/static/uploads/' + image3name)                                 # save this
+
+        if form.image4.data:
+            image4name = unicode(random.randint(9000, 10000)) + '-southasianlink-' + secure_filename(form.image4.data.filename)
+            form.image4.data.save('app/static/uploads/' + image4name)                                 # save this
 
         if form.video.data:
             video_url = form.video.data
@@ -405,7 +431,10 @@ def addproduct():
                 else:
                     imagename = "placeholder-video.png"
 
-        product = Product(title=title, pub_date=pub_date, contact_name=contact_name, services=services, cell_number=cell_number, fax_number=fax_number, website=website, email=email, location=location, category=category, owner_id=current_user.id, image=imagename, video=vid, address=address, phone=phone)
+        product = Product(title=title, pub_date=pub_date, contact_name=contact_name, services=services,
+                          cell_number=cell_number, fax_number=fax_number, website=website, email=email,
+                          location=location, category=category, owner_id=current_user.id, image=imagename,
+                          image2=image2name, image3=image3name, image4=image4name, video=vid, address=address, phone=phone)
 
         db.session.add(product)
         db.session.commit()
@@ -438,6 +467,16 @@ def product(id):
             db.session.commit()
 
     return render_template('product.html', product=product, reviewform=reviewform, reviews=reviews, prod_next=prod_next, prod_prev=prod_prev, xposts=xposts)
+
+
+@app.route('/p/<id>/edit')
+def edit_product(id):
+    product = Product.query.get_or_404(id)
+    form = AddProduct()
+
+    if request.method == 'POST':
+        pass
+    return render_template('edit.html', product=product, form=form)
 
 
 @app.route('/p/<id>/review/', methods=['POST'])
@@ -532,15 +571,18 @@ def delete_review(id):
 
 # ============================ Pages ===============================
 
+
 @app.route('/legal/<page>/')
 def page(page):
     return render_template('legal.html', page=page)
 
 # ============================ /Pages ===============================
 
+
 @app.errorhandler(401)
 def custom_401(error):
     return Response('Please Sign up or Log in', 401, {'WWWAuthenticate': 'Basic realm="Login Required"'})
+
 
 @app.errorhandler(413)
 def custom_413(e):

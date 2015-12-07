@@ -67,6 +67,23 @@ google.maps.event.addDomListener(window, 'load', initialize);
 					<img class="img-responsive" itemprop="image" src="{{ product.image|thumbnail('800x600', quality=100)|replace("_800x600_100.gif", ".gif") }}" alt="">
 					{% endif %}
 				</div>
+				<div class="photos-other clearfix">
+					{% if product.image2 is not none %}
+					<a href="{{ url_for('static', filename='uploads/'+product.image2) }}">
+						<img itemprop="image" src="{{ product.image2|thumbnail('100x100', quality=70) }}" alt="">
+					</a>
+					{% endif %}
+					{% if product.image3 is not none %}
+					<a href="{{ url_for('static', filename='uploads/'+product.image3) }}">
+						<img itemprop="image" src="{{ product.image3|thumbnail('100x100', quality=70) }}" alt="">
+					</a>
+					{% endif %}
+					{% if product.image4 is not none %}
+					<a href="{{ url_for('static', filename='uploads/'+product.image4) }}">
+						<img itemprop="image" src="{{ product.image4|thumbnail('100x100', quality=70) }}" alt="">
+					</a>
+					{% endif %}
+				</div>
 				<p class="phone">{% if product.contact_name %}Contact Name: {{ product.contact_name }} {% endif %}</p>
 				<p class="phone">{% if product.services %}Services: {{ product.services }} {% endif %}</p>
 				<p class="phone">{% if product.phone %}Phone: {{ product.phone }} {% endif %}</p>

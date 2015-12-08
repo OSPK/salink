@@ -142,8 +142,10 @@ def product_review_count(products):
     return r
 
 
-def is_authorised(user, product):
+def is_authorised(product):
     if current_user.is_authenticated() and current_user.id == product.owner_id:
+        return True
+    elif current_user.id == 1:
         return True
     else:
         return False
@@ -166,7 +168,89 @@ def top_categories():
 def site_url():
     return 'http://southasianlink.ca/'
 
-app.jinja_env.globals.update(ago_format=ago_format, top_categories=top_categories, site_url=site_url)
+
+def video_stuff(vid_data):
+    video_url = vid_data
+
+    if not video_url.startswith('http://'):
+        if not video_url.startswith('https://'):
+            video_url = "http://" + video_url
+    sites_allowed = ['dailymotion', 'youtube', 'tune.pk', 'playit.pk', 'vine.co', 'vimeo.com', 'soundcloud.com']
+
+    # check if from sites_allowed
+    if not any(site in video_url for site in sites_allowed):
+        flash("Not a valid video URL", 'danger')
+        return "Invalid video"
+
+    # proceed if not
+    try:
+        video = opengraph.OpenGraph(url=video_url)
+    except:
+        video = None
+
+    if "playit.pk" in video_url:
+        vid_id = video.url.split('?v=')[1]
+        vid = "https://playit.pk/embed-t?v=" + vid_id
+        # image = "http://img.playit.pk/vi/{0}/hqdefault.jpg".format(vid_id)
+        if video.get('image'):
+            image = video.image
+            imagename = unicode(random.randint(9000, 10000)) + '-southasianlink-' + secure_filename(title) + ".jpg"
+            with open('app/static/uploads/' + imagename, 'w') as f:
+                req = urllib2.Request(image, headers={'User-Agent': "Mozilla"})
+                f.write(urllib2.urlopen(req, timeout=15).read())
+        else:
+            imagename = "placeholder-video.png"
+
+    elif "tune.pk" in video_url:
+        vid_id = video.video.split('?videoid=')[1]
+        vid = "http://tune.pk/player/embed_player.php?vid={0}&autoplay=no".format(vid_id)
+        if video.get('image'):
+            image = video.get('image')
+            imagename = unicode(random.randint(9000, 10000)) + '-southasianlink-' + secure_filename(video.get('title')) + ".jpg"
+            with open('app/static/uploads/' + imagename, 'w') as f:
+                f.write(urllib2.urlopen(image, timeout=15).read())
+        else:
+            imagename = "placeholder-video.png"
+
+    elif "soundcloud.com" in video_url:
+        vid = video.get('player')
+        if video.get('image'):
+            image = video.get('image:src').replace("https://", "http://")
+            imagename = unicode(random.randint(9000, 10000)) + '-southasianlink-' + secure_filename(video.get('title')) + ".jpg"
+            with open('app/static/uploads/' + imagename, 'w') as f:
+                req = urllib2.Request(image, headers={'User-Agent': "Mozilla"})
+                f.write(urllib2.urlopen(req, timeout=15).read())
+        else:
+            imagename = "placeholder-video.png"
+
+    else:
+        if video is None or not video.is_valid():
+            flash("Not a valid video URL", 'danger')
+            return redirect(url_for('addproduct'))
+
+        if video.get('video'):
+            vid = video.get('video')
+        if video.get('video:url'):
+            vid = video.get('video:url')
+        if "vimeo.com/" in video_url:
+            vid_id = video.get("video:url").split('clip_id=')[1].split('&')[0]
+            vid = "https://player.vimeo.com/video/{0}".format(vid_id)
+
+        if video.get('image'):
+            image = video.get('image')
+            imagename = unicode(random.randint(9000, 10000)) + '-southasianlink-' + secure_filename(video.get('title')) + ".jpg"
+            with open('app/static/uploads/' + imagename, 'w') as f:
+                f.write(urllib2.urlopen(image, timeout=15).read())
+        else:
+            imagename = "placeholder-video.png"
+
+    v = {}
+    v['vid'] = vid
+    v['imagename'] = imagename
+    print v
+    return v
+
+app.jinja_env.globals.update(ago_format=ago_format, top_categories=top_categories, site_url=site_url, is_authorised=is_authorised)
 
 
 # ------------------ ROUTES ---------------------------------------
@@ -175,7 +259,7 @@ app.jinja_env.globals.update(ago_format=ago_format, top_categories=top_categorie
 @app.route('/')
 def index():
     this_month = datetime.date.today() - datetime.timedelta(days=131)
-    products = Product.query.filter(Product.pub_date > this_month).order_by(Product.views.desc()).paginate(1, 9, False)
+    products = Product.query.filter(Product.pub_date > this_month, Product.status == 'publish').order_by(Product.views.desc()).paginate(1, 9, False)
     if current_user.is_authenticated() is True:
         return redirect(url_for('products'))
 
@@ -236,7 +320,7 @@ def products(page=1, view='latest'):
 
     if view == 'trending':
         this_week = datetime.date.today() - datetime.timedelta(days=7)
-        products = Product.query.filter(Product.pub_date > this_week).order_by(Product.views.desc()).paginate(page, POSTS_PER_PAGE, False)
+        products = Product.query.filter(Product.pub_date > this_week, Product.status == 'publish').order_by(Product.views.desc()).paginate(page, POSTS_PER_PAGE, False)
     if view == 'most-viewed':
         products = Product.query.order_by(Product.views.desc()).paginate(page, POSTS_PER_PAGE, False)
     if view == 'passing':
@@ -357,84 +441,15 @@ def addproduct():
             form.image4.data.save('app/static/uploads/' + image4name)                                 # save this
 
         if form.video.data:
-            video_url = form.video.data
-
-            if not video_url.startswith('http://'):
-                if not video_url.startswith('https://'):
-                    video_url = "http://" + video_url
-            sites_allowed = ['dailymotion', 'youtube', 'tune.pk', 'playit.pk', 'vine.co', 'vimeo.com', 'soundcloud.com']
-
-            # check if from sites_allowed
-            if not any(site in video_url for site in sites_allowed):
-                flash("Not a valid video URL", 'danger')
-                return render_template('new.html', form=form)
-
-            # proceed if not
-            try:
-                video = opengraph.OpenGraph(url=video_url)
-            except:
-                video = None
-
-            if "playit.pk" in video_url:
-                vid_id = video.url.split('?v=')[1]
-                vid = "https://playit.pk/embed-t?v=" + vid_id
-                # image = "http://img.playit.pk/vi/{0}/hqdefault.jpg".format(vid_id)
-                if video.get('image'):
-                    image = video.image
-                    imagename = unicode(random.randint(9000, 10000)) + '-southasianlink-' + secure_filename(title) + ".jpg"
-                    with open('app/static/uploads/' + imagename, 'w') as f:
-                        req = urllib2.Request(image, headers={'User-Agent': "Mozilla"})
-                        f.write(urllib2.urlopen(req, timeout=15).read())
-                else:
-                    imagename = "placeholder-video.png"
-
-            elif "tune.pk" in video_url:
-                vid_id = video.video.split('?videoid=')[1]
-                vid = "http://tune.pk/player/embed_player.php?vid={0}&autoplay=no".format(vid_id)
-                if video.get('image'):
-                    image = video.get('image')
-                    imagename = unicode(random.randint(9000, 10000)) + '-southasianlink-' + secure_filename(video.get('title')) + ".jpg"
-                    with open('app/static/uploads/' + imagename, 'w') as f:
-                        f.write(urllib2.urlopen(image, timeout=15).read())
-                else:
-                    imagename = "placeholder-video.png"
-
-            elif "soundcloud.com" in video_url:
-                vid = video.get('player')
-                if video.get('image'):
-                    image = video.get('image:src').replace("https://", "http://")
-                    imagename = unicode(random.randint(9000, 10000)) + '-southasianlink-' + secure_filename(video.get('title')) + ".jpg"
-                    with open('app/static/uploads/' + imagename, 'w') as f:
-                        req = urllib2.Request(image, headers={'User-Agent': "Mozilla"})
-                        f.write(urllib2.urlopen(req, timeout=15).read())
-                else:
-                    imagename = "placeholder-video.png"
-
-            else:
-                if video is None or not video.is_valid():
-                    flash("Not a valid video URL", 'danger')
-                    return render_template('new.html', form=form)
-
-                if video.get('video'):
-                    vid = video.get('video')
-                if video.get('video:url'):
-                    vid = video.get('video:url')
-                if "vimeo.com/" in video_url:
-                    vid_id = video.get("video:url").split('clip_id=')[1].split('&')[0]
-                    vid = "https://player.vimeo.com/video/{0}".format(vid_id)
-
-                if video.get('image'):
-                    image = video.get('image')
-                    imagename = unicode(random.randint(9000, 10000)) + '-southasianlink-' + secure_filename(video.get('title')) + ".jpg"
-                    with open('app/static/uploads/' + imagename, 'w') as f:
-                        f.write(urllib2.urlopen(image, timeout=15).read())
-                else:
-                    imagename = "placeholder-video.png"
+            v = video_stuff(form.video.data)
+            vid = v['vid']
+            imagename = v['imagename']
 
         product = Product(title=title, pub_date=pub_date, contact_name=contact_name, services=services,
                           cell_number=cell_number, fax_number=fax_number, website=website, email=email,
                           location=location, category=category, owner_id=current_user.id, image=imagename,
-                          image2=image2name, image3=image3name, image4=image4name, video=vid, address=address, phone=phone)
+                          image2=image2name, image3=image3name, image4=image4name, video=vid, address=address,
+                          phone=phone, status=pending)
 
         db.session.add(product)
         db.session.commit()
@@ -469,13 +484,77 @@ def product(id):
     return render_template('product.html', product=product, reviewform=reviewform, reviews=reviews, prod_next=prod_next, prod_prev=prod_prev, xposts=xposts)
 
 
-@app.route('/p/<id>/edit')
+@app.route('/p/<id>/edit', methods=['GET', 'POST'])
 def edit_product(id):
     product = Product.query.get_or_404(id)
     form = AddProduct()
 
     if request.method == 'POST':
-        pass
+        if form.validate_on_submit() and is_authorised(product):
+            title = form.title.data
+            address = form.address.data
+            phone = form.phone.data
+            category = form.category.data
+            pub_date = datetime.datetime.now()
+            contact_name = form.contact_name.data
+            services = form.services.data
+            cell_number = form.cell_number.data
+            fax_number = form.fax_number.data
+            website = form.website.data
+            email = form.email.data
+            location = form.location.data
+            imagename = product.image
+            image2name = product.image2
+            image3name = product.image3
+            image4name = product.image4
+            vid = product.video
+
+            if form.image.data:
+                imagename = unicode(random.randint(9000, 10000)) + '-southasianlink-' + secure_filename(form.image.data.filename)
+                form.image.data.save('app/static/uploads/' + imagename)                                 # save this
+
+            if form.image2.data:
+                image2name = unicode(random.randint(9000, 10000)) + '-southasianlink-' + secure_filename(form.image2.data.filename)
+                form.image2.data.save('app/static/uploads/' + image2name)                                 # save this
+
+            if form.image3.data:
+                image3name = unicode(random.randint(9000, 10000)) + '-southasianlink-' + secure_filename(form.image3.data.filename)
+                form.image3.data.save('app/static/uploads/' + image3name)                                 # save this
+
+            if form.image4.data:
+                image4name = unicode(random.randint(9000, 10000)) + '-southasianlink-' + secure_filename(form.image4.data.filename)
+                form.image4.data.save('app/static/uploads/' + image4name)                                 # save this
+
+            if form.video.data:
+                v = video_stuff(form.video.data)
+                vid = v['vid']
+                imagename = v['imagename']
+
+            product.title = title
+            product.pub_date = pub_date
+            product.contact_name = contact_name
+            product.services = services
+            product.cell_number = cell_number
+            product.fax_number = fax_number
+            product.website = website
+            product.email = email
+            product.location = location
+            product.category = category
+            product.owner_id = current_user.id
+            product.image = imagename
+            product.image2 = image2name
+            product.image3 = image3name
+            product.image4 = image4name
+            product.video = vid
+            product.address = address
+            product.phone = phone
+
+            db.session.commit()
+
+            flash('Added successfully', 'success')
+
+            return redirect(url_for('product', id=product.id))
+
     return render_template('edit.html', product=product, form=form)
 
 
@@ -548,7 +627,7 @@ def oauth_callback(provider):
 def delete_product(id):
     product = Product.query.options(load_only("id")).get_or_404(id)
     title = "'" + product.title + "' deleted"
-    if current_user.is_authenticated() and current_user.id == product.owner_id:
+    if is_authorised(product):
         db.session.delete(product)
         db.session.commit()
         flash(title, "danger")

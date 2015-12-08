@@ -39,7 +39,7 @@ google.maps.event.addDomListener(window, 'load', initialize);
 	<div class="row">
 		<div class="col-md-8">
 			<div class="product" itemscope itemtype="http://schema.org/Product">
-				{% if current_user.is_authenticated() and product.owner_id == current_user.id %}
+				{% if is_authorised(product) %}
 				<div class="owner_menu">
 					<div class="btn-group">
 					  <button type="button" class="btn btn-xs btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -50,7 +50,9 @@ google.maps.event.addDomListener(window, 'load', initialize);
 					    <li><button type="submit" class="pdelbutton"><i class="fa fa-trash"></i> Delete</button></li>
 					  </form>
 					    <li role="separator" class="divider"></li>
+					  <form id="edit_product" action="{{ url_for('edit_product', id=product.id) }}" method="post">
 					    <li><button class="editbutton"><i class="fa fa-pencil-square-o"></i> Edit</button></li>
+					  </form>
 					  </ul>
 					</div>
 				</div>

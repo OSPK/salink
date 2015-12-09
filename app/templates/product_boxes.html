@@ -25,6 +25,13 @@
                 <div class="address">
                     Address: {% if product.address %}{{ product.address|truncate(90, True) }}{% endif %}
                 </div>
+                {% if product.status == 'pending' and is_admin() %}
+                <div class="pending">
+                    <form method='POST' action="{{ url_for('approve', id=product.id) }}">
+                        <button class="btn btn-danger" type="submit">Approve</button>
+                    </form>
+                </div>
+                {% endif %}
             </div>
             <div class="small product-meta hidden-xs clearfix">
                 <i class="fa fa-eye"></i> {% if product.views %}{{ product.views }}{% else %}0{% endif %} views | 

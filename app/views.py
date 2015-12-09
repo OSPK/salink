@@ -151,13 +151,20 @@ def is_authorised(product):
         return False
 
 
+def is_admin():
+    if current_user.id in [1]:
+        return True
+    else:
+        return False
+
+
 def ago_format(date):
     return human(date, precision=1, past_tense='{} ago', future_tense='in {}')
 
 
 def top_categories():
     this_month = datetime.date.today() - datetime.timedelta(days=60)
-    p = Product.query.options(load_only("category")).filter(Product.pub_date > this_month).order_by(Product.views.desc()).limit(10).all()
+    p = Product.query.options(load_only("category")).filter(Product.status == 'publish').order_by(Product.views.desc()).limit(10).all()
     c = []
     for product in p:
         cat = [product.category]
@@ -250,7 +257,7 @@ def video_stuff(vid_data):
     print v
     return v
 
-app.jinja_env.globals.update(ago_format=ago_format, top_categories=top_categories, site_url=site_url, is_authorised=is_authorised)
+app.jinja_env.globals.update(ago_format=ago_format, top_categories=top_categories, site_url=site_url, is_authorised=is_authorised, is_admin=is_admin)
 
 
 # ------------------ ROUTES ---------------------------------------
@@ -316,21 +323,15 @@ def profile(user, view='p', page=1):
 @app.route('/listing/<view>/')
 @app.route('/listing/<view>/<int:page>/')
 def products(page=1, view='latest'):
-    products = Product.query.order_by(Product.pub_date.desc()).paginate(page, POSTS_PER_PAGE, False)
+    products = Product.query.filter(Product.status == 'publish').order_by(Product.pub_date.desc()).paginate(page, POSTS_PER_PAGE, False)
 
     if view == 'trending':
         this_week = datetime.date.today() - datetime.timedelta(days=7)
         products = Product.query.filter(Product.pub_date > this_week, Product.status == 'publish').order_by(Product.views.desc()).paginate(page, POSTS_PER_PAGE, False)
     if view == 'most-viewed':
-        products = Product.query.order_by(Product.views.desc()).paginate(page, POSTS_PER_PAGE, False)
-    if view == 'passing':
-        products = Product.query.filter(Product.passes > Product.fails).order_by(Product.passes.desc()).paginate(page, POSTS_PER_PAGE, False)
-    if view == 'failing':
-        products = Product.query.filter(Product.fails > Product.passes).order_by(Product.fails.desc()).paginate(page, POSTS_PER_PAGE, False)
+        products = Product.query.filter(Product.status == 'publish').order_by(Product.views.desc()).paginate(page, POSTS_PER_PAGE, False)
     if view == 'most-reviewed':
-        products = Product.query.order_by(Product.review_count.desc()).paginate(page, POSTS_PER_PAGE, False)
-    if view == 'tied':
-        products = Product.query.filter((Product.fails == Product.passes) >= 1).order_by(Product.fails.desc()).paginate(page, POSTS_PER_PAGE, False)
+        products = Product.query.filter(Product.status == 'publish').order_by(Product.review_count.desc()).paginate(page, POSTS_PER_PAGE, False)
 
     return render_template('products.html', products=products, view=view)
 
@@ -342,17 +343,38 @@ def category(page=1, category=None, view='latest'):
     if category is None:
         return redirect(url_for('products'))
 
-    products = Product.query.filter(Product.category == category).order_by(Product.pub_date.desc()).paginate(page, POSTS_PER_PAGE, False)
+    products = Product.query.filter(Product.category == category, Product.status == 'publish').order_by(Product.pub_date.desc()).paginate(page, POSTS_PER_PAGE, False)
 
     if view == 'trending':
         this_week = datetime.date.today() - datetime.timedelta(days=7)
-        products = Product.query.filter(Product.pub_date > this_week, Product.category == category).order_by(Product.views.desc()).paginate(page, POSTS_PER_PAGE, False)
+        products = Product.query.filter(Product.pub_date > this_week, Product.category == category, Product.status == 'publish').order_by(Product.views.desc()).paginate(page, POSTS_PER_PAGE, False)
     if view == 'most-viewed':
-        products = Product.query.filter(Product.category == category).order_by(Product.views.desc()).paginate(page, POSTS_PER_PAGE, False)
+        products = Product.query.filter(Product.category == category, Product.status == 'publish').order_by(Product.views.desc()).paginate(page, POSTS_PER_PAGE, False)
     if view == 'most-reviewed':
-        products = Product.query.filter(Product.category == category).order_by(Product.review_count.desc()).paginate(page, POSTS_PER_PAGE, False)
+        products = Product.query.filter(Product.category == category, Product.status == 'publish').order_by(Product.review_count.desc()).paginate(page, POSTS_PER_PAGE, False)
 
     return render_template('category.html', products=products, category=category, view=view)
+
+
+@app.route('/pending/')
+@app.route('/pending/<int:page>/')
+def pending(page=1):
+    if is_admin():
+        products = Product.query.filter(Product.status == 'pending').order_by(Product.pub_date.desc()).paginate(page, POSTS_PER_PAGE, False)
+        return render_template('products.html', products=products, view='pending')
+    else:
+        return redirect(url_for('index'))
+
+
+@app.route('/approve/<int:id>/', methods=['POST'])
+def approve(id):
+    if is_admin:
+        product = Product.query.get_or_404(id)
+        product.status = "publish"
+        db.session.commit()
+        flash('Approved product', 'success')
+
+    return redirect(url_for('pending'))
 
 
 @app.route('/s/', methods=['GET'])
@@ -370,8 +392,8 @@ def search(page=1):
 @app.route('/listing/autocomplete', methods=['GET', 'POST'])
 def autocomplete():
     search = unicode(request.args.get('q'))
-    products = Product.query.options(load_only("title", "id")).filter(Product.title.startswith(search)).limit(5).all()
-    products2 = Product.query.options(load_only("title", "id")).filter(Product.title.contains('%' + search + '%')).limit(5).all()
+    products = Product.query.options(load_only("title", "id")).filter(Product.title.startswith(search), Product.status == 'publish').limit(5).all()
+    products2 = Product.query.options(load_only("title", "id")).filter(Product.title.contains('%' + search + '%'), Product.status == 'publish').limit(5).all()
     p = {}
     q = []
     for product in products:
@@ -449,7 +471,7 @@ def addproduct():
                           cell_number=cell_number, fax_number=fax_number, website=website, email=email,
                           location=location, category=category, owner_id=current_user.id, image=imagename,
                           image2=image2name, image3=image3name, image4=image4name, video=vid, address=address,
-                          phone=phone, status=pending)
+                          phone=phone, status='pending')
 
         db.session.add(product)
         db.session.commit()
@@ -467,9 +489,9 @@ def addproduct():
 def product(id):
     product = Product.query.get_or_404(id)
     category = product.category
-    xposts = Product.query.options(load_only("id")).filter(Product.id < id, Product.category == category).order_by(Product.pub_date.desc()).limit(7).all()
-    prod_next = Product.query.options(load_only("id")).filter(Product.id < id, Product.category == category).order_by(Product.pub_date.desc()).limit(1).first()  # Product.query.get(next_id)
-    prod_prev = Product.query.options(load_only("id")).filter(Product.id > id, Product.category == category).order_by(Product.pub_date.desc()).limit(1).first()
+    xposts = Product.query.options(load_only("id")).filter(Product.id < id, Product.category == category, Product.status == 'publish').order_by(Product.pub_date.desc()).limit(7).all()
+    prod_next = Product.query.options(load_only("id")).filter(Product.id < id, Product.category == category, Product.status == 'publish').order_by(Product.pub_date.desc()).limit(1).first()  # Product.query.get(next_id)
+    prod_prev = Product.query.options(load_only("id")).filter(Product.id > id, Product.category == category, Product.status == 'publish').order_by(Product.pub_date.desc()).limit(1).first()
     reviews = product.reviews.all()
     reviewform = AddReview()
 

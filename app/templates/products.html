@@ -20,8 +20,9 @@
             {% if not search %}
             <style type="text/css" media="screen">
                 .pill{{view}} {background: #242632;color: #FFF;}
+                .pending {display:none;}
             </style>
-                <div class="row" style="padding:15px;margin-bottom:15px;">
+                <div class="row {{view}}" style="padding:15px;margin-bottom:15px;">
                     <a href="{{ url_for('products', view='latest') }}" class="btn btn-default btn-sm pilllatest">Latest</a>
                     <a href="{{ url_for('products', view='trending') }}" class="btn btn-default btn-sm pilltrending">Trending</a>
                     <a href="{{ url_for('products', view='most-viewed') }}" class="btn btn-default btn-sm pillmost-viewed">Most viewed</a>

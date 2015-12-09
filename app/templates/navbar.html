@@ -23,6 +23,7 @@
 				{% if current_user.is_authenticated() %}
 					<li><a href="{{ url_for('addproduct') }}"><i class="fa fa-plus-square"></i> New</a></li>
 					<li class="active"><a href="{{ url_for('profile', user=current_user.nickname) }}">{{ current_user.nickname }}</a></li>
+					{% if is_admin() %}<li><a href="{{ url_for('pending') }}"><i class="fa fa-ban"></i> Pending Approval</a></li>{% endif %}
 					<li><a href="{{ url_for('logout') }}"><i class="fa fa-sign-out"></i> Log out</a></li>
 				{% else %}
 					<li><a href="{{ url_for('signup') }}"><i class="fa fa-sign-in"></i> Sign Up</a></li>

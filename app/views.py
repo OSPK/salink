@@ -268,8 +268,6 @@ app.jinja_env.globals.update(ago_format=ago_format, top_categories=top_categorie
 def index():
     this_month = datetime.date.today() - datetime.timedelta(days=131)
     products = Product.query.filter(Product.pub_date > this_month, Product.status == 'publish').order_by(Product.views.desc()).paginate(1, 9, False)
-    if current_user.is_authenticated() is True:
-        return redirect(url_for('products'))
 
     return render_template('index.html', title='Home', products=products)
 

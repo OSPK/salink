@@ -13,6 +13,7 @@
                 <h1>South Asian Link.</h1><br>
                 </div><br>
             </div>
+            {% if not current_user.is_authenticated() %}
             <div class="row no-gutter">
                 <div class="col-md-6 col-sm-6 col-xs-6">
                     <a href="{{ url_for('signup') }}">
@@ -25,6 +26,13 @@
                     </a>
                 </div>
             </div>
+            {% else %}
+            <div class="row no-gutter text-center">
+                <a href="{{ url_for('addproduct') }}">
+                    <button class="btn btn-warning btn-lg">Add a Lisiting</button>
+                </a>
+            </div>
+            {% endif %}
         </div>
     </header>
 {% endblock %}

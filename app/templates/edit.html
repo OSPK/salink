@@ -116,14 +116,13 @@ google.maps.event.addDomListener(window, 'load', initialize);
 				    	{{ form.email.label }}
 				    	{{ form.email(value=product.email, class_="form-control") }}
 				    </div>
-			</div>
-			<div class="col-md-6">
 				    <div class="form-group">
 				    	{{ form.address.label }}
 				    	{{ form.address(placeholder=product.address, rows="2", class_="form-control", maxlength="500", autocomplete="off") }}
 				    	<script> var textarea = document.getElementById('address'); textarea.innerHTML = "{{ product.address }}" </script>
 				    </div>
-				    
+			</div>
+			<div class="col-md-6">
 				    <b>Closest matching address:</b>
 					<div id="cl-address"></div>
 					<div id="mapCanvas"></div>

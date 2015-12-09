@@ -3,7 +3,7 @@ import random
 import urllib2
 from flask import redirect, url_for, render_template, flash, request, json,\
     jsonify, Response, escape, abort
-from app import app, login_manager, db, limiter
+from app import app, login_manager, db, limiter, mail
 from flask.ext.assets import Environment, Bundle
 from flask.ext.login import login_user, logout_user, current_user
 from pf_oauth import OAuthSignIn
@@ -20,6 +20,7 @@ from flask_wtf.file import FileField, FileAllowed, FileRequired
 from ago import human
 import opengraph
 from sqlalchemy.orm import load_only
+from flask.ext.mail import Message
 
 # Compile Sass using Flask-assets
 assets = Environment(app)
@@ -475,6 +476,14 @@ def addproduct():
 
         db.session.add(product)
         db.session.commit()
+        msg = Message("Product added | Pending", sender="support@southasianlink.ca", recipients=["waqas@opensource.com.pk"])
+        msg.html = """
+        <h1>A new product has been added</h1>
+        <h2 style='color:#4070A0;'>{}</h2>
+        <h3>It is pending your approval</h3>
+        <p>To approve go to <a href="http://southasianlink.ca/pending">http://southasianlink.ca/pending</a></p>
+        """.format(title)
+        mail.send(msg)
 
         flash('Added successfully', 'success')
 

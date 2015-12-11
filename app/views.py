@@ -474,7 +474,7 @@ def addproduct():
 
         db.session.add(product)
         db.session.commit()
-        msg = Message("Product added | Pending", sender="support@southasianlink.ca", recipients=["waqas@opensource.com.pk"])
+        msg = Message("Product added | Pending", sender="support@southasianlink.ca", recipients=["southasianlinks@gmail.com"])
         msg.html = """
         <h1>A new product has been added</h1>
         <h2 style='color:#4070A0;'>{}</h2>

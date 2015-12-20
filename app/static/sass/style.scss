@@ -966,6 +966,44 @@ section {
         }
     }
 }
+.featured-products {
+    box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.2);
+    word-wrap: break-word;
+    background: #efefef;
+    padding:2em 2em;
+    padding-left:2.5em;
+    border: 0px;
+    .row {
+        // display: table;
+    }
+    .product_photo {
+        @include vendor-prefix('border-radius', '3px');
+        .img-responsive {
+            @include vendor-prefix('border-radius', '3px');
+        }
+    }
+    .phcol {
+        padding-left:5px;
+
+    }
+    .tlcol {
+        padding:0px 10px;
+        position: relative;
+
+        h4 {
+            margin-top:2px;
+            margin-bottom: 0px;
+            font-size: 14px;
+            line-height: 16px;
+            min-height: 60px;
+        }
+        .product-meta {
+            position: absolute;
+            bottom:0px;
+            color:#ccc;
+        }
+    }
+}
 .photos-other {
   text-align: center;
   a {

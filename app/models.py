@@ -66,6 +66,7 @@ class Product(db.Model):
     video = db.Column(db.String(300), nullable=True)
     reviews = db.relationship('Review', cascade="all,delete", backref='product', lazy='dynamic')
     views = db.Column(db.Integer, nullable=True)
+    featured = db.Column(db.Boolean, nullable=True)
 
     def __init__(self, **kwargs):
         super(Product, self).__init__(**kwargs)

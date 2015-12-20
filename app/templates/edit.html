@@ -123,6 +123,17 @@ google.maps.event.addDomListener(window, 'load', initialize);
 				    </div>
 			</div>
 			<div class="col-md-6">
+					{% if is_admin() %}
+				    <div class="form-group">
+				    	{{ form.featured.label }}
+				    	{% if product.featured == true %}
+				    		{{ form.featured(class_="form-control", checked="checked") }}
+				    	{% else %}
+				    		{{ form.featured(class_="form-control") }}
+				    	{% endif %}
+				    </div>
+				    <br>
+					{% endif %}
 				    <b>Closest matching address:</b>
 					<div id="cl-address"></div>
 					<div id="mapCanvas"></div>

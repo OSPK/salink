@@ -40,9 +40,9 @@
 {% block content %}
     <section class="home products" itemtype="http://schema.org/ItemList">
         <div class="container">
-            <h2 class="text-center">Latest Listings</h2><hr>
             <div class="row">
                 <div class="col-md-8">
+                    <h2 class="text-center">Latest Listings</h2><hr>
                     {% for product in products.items %}
                         {% include 'product_boxes.html' %}
                     {% endfor %}

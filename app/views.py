@@ -10,7 +10,7 @@ from pf_oauth import OAuthSignIn
 from models import User, Product, Review
 # WTF FORMS
 from flask_wtf import Form
-from wtforms import StringField, PasswordField, HiddenField, SubmitField, SelectField
+from wtforms import StringField, PasswordField, HiddenField, SubmitField, SelectField, BooleanField
 from wtforms.widgets import TextArea
 from wtforms.validators import DataRequired, Length, ValidationError,\
     InputRequired, Email
@@ -74,6 +74,7 @@ class AddProduct(Form):
     website = StringField('Website')
     email = StringField('Email')
     location = StringField('Location')
+    featured = BooleanField('Featured Listing')
 
 
 class AddReview(Form):
@@ -259,7 +260,13 @@ def video_stuff(vid_data):
     print v
     return v
 
-app.jinja_env.globals.update(ago_format=ago_format, top_categories=top_categories, site_url=site_url, is_authorised=is_authorised, is_admin=is_admin)
+
+def featured():
+    producs = Product.query.filter(Product.featured == True).all()
+    return producs
+
+
+app.jinja_env.globals.update(ago_format=ago_format, featured=featured, top_categories=top_categories, site_url=site_url, is_authorised=is_authorised, is_admin=is_admin)
 
 
 # ------------------ ROUTES ---------------------------------------
@@ -538,6 +545,7 @@ def edit_product(id):
             image3name = product.image3
             image4name = product.image4
             vid = product.video
+            featured = form.featured.data
 
             if form.image.data:
                 imagename = unicode(random.randint(9000, 10000)) + '-southasianlink-' + secure_filename(form.image.data.filename)
@@ -578,6 +586,8 @@ def edit_product(id):
             product.video = vid
             product.address = address
             product.phone = phone
+            if is_admin():
+                product.featured = featured
 
             db.session.commit()
 

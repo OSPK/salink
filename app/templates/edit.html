@@ -74,146 +74,144 @@ google.maps.event.addDomListener(window, 'load', initialize);
 
 {% block content %}
 	<div class="container main new">
-		<div class="row">
+		{% if current_user.is_authenticated() %}
+		<form id="form" method="POST" action="{{ url_for('edit_product', id=product.id) }}" enctype="multipart/form-data">
 		<h2>Business Listing form</h2>
-			<div class="col-md-6">
-				{% if current_user.is_authenticated() %}
-				<form id="form" method="POST" action="{{ url_for('edit_product', id=product.id) }}" enctype="multipart/form-data">
-				    {{ form.hidden_tag() }}
-				    <div class="form-group">
-				    	{{ form.title.label }}
-				    	{{ form.title(size=20, value=product.title, id="newimgtitle", class_="form-control", maxlength="70") }}
-				    </div>
-				    <div class="form-group">
-				    	{{ form.contact_name.label }}
-				    	{{ form.contact_name(class_="form-control", value=product.contact_name) }}
-				    </div>
-				    <div class="form-group">
-				    	{{ form.category.label }}
-				    	{{ form.category(class_="form-control") }}
-				    </div>
-				    <div class="form-group">
-				    	{{ form.services.label }}
-				    	{{ form.services(value=product.services, class_="form-control") }}
-				    </div>
-				    <div class="form-group">
-				    	{{ form.phone.label }}
-				    	{{ form.phone(value=product.phone, size=20, id="newimgphone", class_="form-control", maxlength="70") }}
-				    </div>
-				    <div class="form-group">
-				    	{{ form.cell_number.label }}
-				    	{{ form.cell_number(value=product.cell_number, class_="form-control") }}
-				    </div>
-				    <div class="form-group">
-				    	{{ form.fax_number.label }}
-				    	{{ form.fax_number(value=product.fax_number, class_="form-control") }}
-				    </div>
-				    <div class="form-group">
-				    	{{ form.website.label }}
-				    	{{ form.website(value=product.website, class_="form-control") }}
-				    </div>
-				    <div class="form-group">
-				    	{{ form.email.label }}
-				    	{{ form.email(value=product.email, class_="form-control") }}
-				    </div>
-				    <div class="form-group">
-				    	{{ form.address.label }}
-				    	{{ form.address(placeholder=product.address, rows="2", class_="form-control", maxlength="500", autocomplete="off") }}
-				    	<script> var textarea = document.getElementById('address'); textarea.innerHTML = "{{ product.address }}" </script>
-				    </div>
+			<div class="row">
+				<div class="col-md-6">
+					    {{ form.hidden_tag() }}
+					    <div class="form-group">
+					    	{{ form.title.label }}
+					    	{{ form.title(size=20, value=product.title, id="newimgtitle", class_="form-control", maxlength="70") }}
+					    </div>
+					    <div class="form-group">
+					    	{{ form.contact_name.label }}
+					    	{{ form.contact_name(class_="form-control", value=product.contact_name) }}
+					    </div>
+					    <div class="form-group">
+					    	{{ form.category.label }}
+					    	{{ form.category(class_="form-control") }}
+					    </div>
+					    <div class="form-group">
+					    	{{ form.services.label }}
+					    	{{ form.services(value=product.services, class_="form-control") }}
+					    </div>
+					    <div class="form-group">
+					    	{{ form.phone.label }}
+					    	{{ form.phone(value=product.phone, size=20, id="newimgphone", class_="form-control", maxlength="70") }}
+					    </div>
+					    <div class="form-group">
+					    	{{ form.cell_number.label }}
+					    	{{ form.cell_number(value=product.cell_number, class_="form-control") }}
+					    </div>
+					    <div class="form-group">
+					    	{{ form.fax_number.label }}
+					    	{{ form.fax_number(value=product.fax_number, class_="form-control") }}
+					    </div>
+					    <div class="form-group">
+					    	{{ form.website.label }}
+					    	{{ form.website(value=product.website, class_="form-control") }}
+					    </div>
+					    <div class="form-group">
+					    	{{ form.email.label }}
+					    	{{ form.email(value=product.email, class_="form-control") }}
+					    </div>
+					    <div class="form-group">
+					    	{{ form.address.label }}
+					    	{{ form.address(placeholder=product.address, rows="2", class_="form-control", maxlength="500", autocomplete="off") }}
+					    	<script> var textarea = document.getElementById('address'); textarea.innerHTML = "{{ product.address }}" </script>
+					    </div>
+				</div>
+				<div class="col-md-6">
+					    <b>Closest matching address:</b>
+						<div id="cl-address"></div>
+						<div id="mapCanvas"></div>
+						<p class="text-danger">Drag the marker to choose your exact location</p>
+						{{ form.location(size=20, id="info", class_="form-control hidden") }}
+						    
+						<br>
+						<ul class="nav nav-tabs" role="tablist">
+						    <li role="presentation" class="active"><a href="#image" aria-controls="image" role="tab" data-toggle="tab">Image</a></li>
+						    <li role="presentation"><a href="#video" aria-controls="profile" role="tab" data-toggle="tab">Video</a></li>
+						</ul>
+						<div class="tab-content">
+						    <div role="tabpanel" class="tab-pane active" id="image">
+						    	<div class="form-group">
+						    		<div class="row">
+						    			<div class="col-md-4">
+						    				{% if product.image %}
+						    				<img itemprop="image" src="{{ product.image|thumbnail('100x100', quality=70) }}" alt="">
+						    				{% endif %}
+						    			</div>
+						    			<div class="col-md-8">
+						    				{{ form.image.label }}
+									    	{{ form.image(size=20, class_="btn btn-default btn-file") }}
+						    			</div>
+						    		</div>
+						    		<div class="row">
+						    			<div class="col-md-4">
+						    				{% if product.image2 %}
+						    				<img itemprop="image" src="{{ product.image2|thumbnail('100x100', quality=70) }}" alt="">
+						    				{% endif %}
+						    			</div>
+						    			<div class="col-md-8">
+						    				{{ form.image2.label }}
+									    	{{ form.image2(size=20, class_="btn btn-default btn-file") }}
+						    			</div>
+						    		</div>
+						    		<div class="row">
+						    			<div class="col-md-4">
+						    				{% if product.image3 %}
+						    				<img itemprop="image" src="{{ product.image3|thumbnail('100x100', quality=70) }}" alt="">
+						    				{% endif %}
+						    			</div>
+						    			<div class="col-md-8">
+						    				{{ form.image3.label }}
+									    	{{ form.image3(size=20, class_="btn btn-default btn-file") }}
+						    			</div>
+						    		</div>
+						    		<div class="row">
+						    			<div class="col-md-4">
+						    				{% if product.image4 %}
+						    				<img itemprop="image" src="{{ product.image4|thumbnail('100x100', quality=70) }}" alt="">
+						    				{% endif %}
+						    			</div>
+						    			<div class="col-md-8">
+						    				{{ form.image4.label }}
+									    	{{ form.image4(size=20, class_="btn btn-default btn-file") }}
+						    			</div>
+						    		</div>
+							    	<small>Max Image Size: 4mb</small>
+							    </div>
+						    </div>
+						    <div role="tabpanel" class="tab-pane" id="video">
+						    	<div class="form-group">
+							    	{{ form.video.label }}
+							    	{{ form.video(size=20, id="newimgvideo", class_="form-control", maxlength="70") }}
+							    	<small>Allowed Sites: 'Youtube', 'Tune.pk', 'Playit.pk', 'Vine.co', 'Vimeo.com'</small>
+							    </div>
+						    </div>
+						</div>
+				</div>
 			</div>
-			<div class="col-md-6">
-					{% if is_admin() %}
-				    <div class="form-group">
-				    	{{ form.featured.label }}
-				    	{% if product.featured == true %}
-				    		{{ form.featured(class_="form-control", checked="checked") }}
-				    	{% else %}
-				    		{{ form.featured(class_="form-control") }}
-				    	{% endif %}
-				    </div>
-				    <br>
-					{% endif %}
-				    <b>Closest matching address:</b>
-					<div id="cl-address"></div>
-					<div id="mapCanvas"></div>
-					<p class="text-danger">Drag the marker to choose your exact location</p>
-					{{ form.location(size=20, id="info", class_="form-control hidden") }}
-					    
-					<br>
-					<ul class="nav nav-tabs" role="tablist">
-					    <li role="presentation" class="active"><a href="#image" aria-controls="image" role="tab" data-toggle="tab">Image</a></li>
-					    <li role="presentation"><a href="#video" aria-controls="profile" role="tab" data-toggle="tab">Video</a></li>
-					</ul>
-					<div class="tab-content">
-					    <div role="tabpanel" class="tab-pane active" id="image">
-					    	<div class="form-group">
-					    		<div class="row">
-					    			<div class="col-md-4">
-					    				{% if product.image %}
-					    				<img itemprop="image" src="{{ product.image|thumbnail('100x100', quality=70) }}" alt="">
-					    				{% endif %}
-					    			</div>
-					    			<div class="col-md-8">
-					    				{{ form.image.label }}
-								    	{{ form.image(size=20, class_="btn btn-default btn-file") }}
-					    			</div>
-					    		</div>
-					    		<div class="row">
-					    			<div class="col-md-4">
-					    				{% if product.image2 %}
-					    				<img itemprop="image" src="{{ product.image2|thumbnail('100x100', quality=70) }}" alt="">
-					    				{% endif %}
-					    			</div>
-					    			<div class="col-md-8">
-					    				{{ form.image2.label }}
-								    	{{ form.image2(size=20, class_="btn btn-default btn-file") }}
-					    			</div>
-					    		</div>
-					    		<div class="row">
-					    			<div class="col-md-4">
-					    				{% if product.image3 %}
-					    				<img itemprop="image" src="{{ product.image3|thumbnail('100x100', quality=70) }}" alt="">
-					    				{% endif %}
-					    			</div>
-					    			<div class="col-md-8">
-					    				{{ form.image3.label }}
-								    	{{ form.image3(size=20, class_="btn btn-default btn-file") }}
-					    			</div>
-					    		</div>
-					    		<div class="row">
-					    			<div class="col-md-4">
-					    				{% if product.image4 %}
-					    				<img itemprop="image" src="{{ product.image4|thumbnail('100x100', quality=70) }}" alt="">
-					    				{% endif %}
-					    			</div>
-					    			<div class="col-md-8">
-					    				{{ form.image4.label }}
-								    	{{ form.image4(size=20, class_="btn btn-default btn-file") }}
-					    			</div>
-					    		</div>
-						    	<small>Max Image Size: 4mb</small>
-						    </div>
-					    </div>
-					    <div role="tabpanel" class="tab-pane" id="video">
-					    	<div class="form-group">
-						    	{{ form.video.label }}
-						    	{{ form.video(size=20, id="newimgvideo", class_="form-control", maxlength="70") }}
-						    	<small>Allowed Sites: 'Youtube', 'Tune.pk', 'Playit.pk', 'Vine.co', 'Vimeo.com'</small>
-						    </div>
-					    </div>
+			<div class="row">
+				{% if is_admin() %}
+					<div class="form-group text-center">
+					    {{ form.featured.label }}
+					    {% if product.featured == true %}
+					    	{{ form.featured(class_="form-control", checked="checked") }}
+					    {% else %}
+					    	{{ form.featured(class_="form-control") }}
+					    {% endif %}
 					</div>
-
-				    <button class="btn btn-primary btn-block" type="submit">Submit</button>
+					<br>
+				{% endif %}
+				<button class="btn btn-primary btn-block" type="submit">Submit</button>
 				</form>
 			</div>
-			{% else %}
-				<p>You need to be logged in to add listing</p>
-			{% endif %}
-		</div>
-		<div class="col-md-6">
-
-		</div>
+		{% else %}
+			<p>You need to be logged in to add listing</p>
+		{% endif %}
 	</div>
 
 {% endblock %}

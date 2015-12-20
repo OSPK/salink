@@ -144,10 +144,11 @@ def product_review_count(products):
 
 
 def is_authorised(product):
-    if current_user.is_authenticated() and current_user.id == product.owner_id:
-        return True
-    elif current_user.id == 1:
-        return True
+    if current_user.is_authenticated():
+        if current_user.id == product.owner_id:
+            return True
+        if current_user.id == 1:
+            return True
     else:
         return False
 

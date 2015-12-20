@@ -1069,23 +1069,23 @@ section {
     line-height: 1.7em;
     &:first-of-type {
         
-        &:before {
-            content: "";
-            font-family: FontAwesome;
-            background: lighten($red, 10%);
-            color: #fff;
-            width: 100px;
-            height: 15px;
-            @include vendor-prefix('border-radius','0px 1px 0px 0px');
-            font-size: 10px;
-            padding: 10px;
-            position: absolute;
-            right: 0px;
-            top: 0px;
-            line-height: 0px;
-            text-align: center;
-            font-weight: bold;
-        }
+        // &:before {
+        //     content: "";
+        //     font-family: FontAwesome;
+        //     background: lighten($red, 10%);
+        //     color: #fff;
+        //     width: 100px;
+        //     height: 15px;
+        //     @include vendor-prefix('border-radius','0px 1px 0px 0px');
+        //     font-size: 10px;
+        //     padding: 10px;
+        //     position: absolute;
+        //     right: 0px;
+        //     top: 0px;
+        //     line-height: 0px;
+        //     text-align: center;
+        //     font-weight: bold;
+        // }
     }
     .author {
         font-weight: bold;

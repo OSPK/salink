@@ -1111,7 +1111,12 @@ section {
         right: 30px;
     }
 }
-
+.home-featured {
+  img {
+    max-width:200px;
+    margin:0px auto;
+  }
+}
 .target {
         border: 2px solid;
         border-color: rgba($red, 0.4);

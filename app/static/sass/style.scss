@@ -374,6 +374,11 @@ div#infscr-loading {
     color: #fff;
   }
 
+.dropdown-menu {
+    max-height: 500px;
+    overflow-y: auto;
+}
+
 .navbar-inverse {
     background: #21242d; /* Old browsers */
     @include gradient($navbar1, rgba($navbar2, 95%));

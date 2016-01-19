@@ -166,13 +166,10 @@ def ago_format(date):
 
 
 def top_categories():
-    this_month = datetime.date.today() - datetime.timedelta(days=60)
-    p = Product.query.options(load_only("category")).filter(Product.status == 'publish').order_by(Product.views.desc()).limit(10).all()
-    c = []
-    for product in p:
-        cat = [product.category]
-        c.extend(cat)
-    return set(c)
+    list = []
+    for category in CATEGORIES:
+        list.append(category[0])
+    return sorted(list)
 
 
 def site_url():
@@ -694,6 +691,17 @@ def delete_review(id):
 @app.route('/legal/<page>/')
 def page(page):
     return render_template('legal.html', page=page)
+
+
+@app.route('/about/')
+def about():
+    return render_template('about.html')
+
+
+@app.route('/tariff/')
+def tariff():
+    return render_template('tariff.html')
+
 
 # ============================ /Pages ===============================
 

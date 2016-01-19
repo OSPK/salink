@@ -39,16 +39,23 @@
     <div class="header home-featured">
         <div class="container text-center">
             <div class="row well well-lg">
-                <h1>How it works</h1><hr>
-                <div class="col-md-4">
-                    <img class="img-responsive img-circle" src="{{ url_for('static', filename='img/1.png') }}" alt="">
-                    <h4>Add your business listings</h4>
+                <div class="col-md-3">
+                    <a href="/about/">
+                        <img class="img-responsive img-circle" src="{{ url_for('static', filename='img/0.png') }}" alt="">
+                        <h4>About Us</h4>
+                    </a>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
+                    <a href="/listing/add">
+                        <img class="img-responsive img-circle" src="{{ url_for('static', filename='img/1.png') }}" alt="">
+                        <h4>Open form to list your business</h4>
+                    </a>
+                </div>
+                <div class="col-md-3">
                     <img class="img-responsive img-circle" src="{{ url_for('static', filename='img/2.png') }}" alt="">
-                    <h4>Let customers find you</h4>
+                    <h4>Search</h4>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <img class="img-responsive img-circle" src="{{ url_for('static', filename='img/3.png') }}" alt="">
                     <h4>Generate more sales</h4>
                 </div>
